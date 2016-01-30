@@ -1,13 +1,13 @@
 package code.java;
 
-import com.jogamp.newt.event.WindowAdapter;
-import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLCanvas;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /**
  * @author peter
@@ -37,20 +37,27 @@ public class Main {
         }
 
         // New FullScreenWindow
-        final JFrame frame = new JFrame("Display Mode");
-        frame.setSize(width, height);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setUndecorated(true);
+        final JFrame frame = new JFrame("ComputerGrafik");
 
-        GLProfile glp = GLProfile.getDefault();
+        GLProfile glp = GLProfile.getGL2GL3();
         GLCapabilities caps = new GLCapabilities(glp);
-        GLCanvas canvas = new GLCanvas(caps);
+        final GLCanvas canvas = new GLCanvas(caps);
         GLEventListenerImpl gLEventListener = new GLEventListenerImpl();
+        canvas.setSize(width, height);
         canvas.addGLEventListener(gLEventListener);
         frame.getContentPane().add(canvas);
-
-        device.setFullScreenWindow(frame);
+        frame.addWindowListener(new WindowAdapter() {
+            public void windowClosing( WindowEvent windowevent ) {
+                frame.remove(canvas);
+                frame.dispose();
+                System.exit( 0 );
+            }
+        });
+        // makes problems
+       // device.setFullScreenWindow(frame);
+        frame.setSize(width, height);
         frame.setVisible(true);
+
 
 
     }

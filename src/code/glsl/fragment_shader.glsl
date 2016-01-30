@@ -29,8 +29,10 @@ void main()
 
     //calculate the cosine of the angle of incidence
     float brightness = dot(normal, surfaceToLight) / (length(surfaceToLight) * length(normal));
-
-    brightness = clamp(brightness, 0.0, 1);
+    /*if (brightness < 0) {
+        brightness = -brightness;
+    }*/
+    brightness = 1;//clamp(brightness, 0, 1);
 
    // finalColor = vec4(brightness * light.intensities * vertexColor.rgb, vertexColor.a);
     finalColor = vec4(brightness * light.intensities * vertexColor.rgb, vertexColor.a);

@@ -49,7 +49,7 @@ public class GLEventListenerImpl implements GLEventListener{
         // generate Indice Buffer Object
         gl.glGenBuffers(1, IntBuffer.wrap(ibo));
         gl.glBindBuffer(GL3.GL_ELEMENT_ARRAY_BUFFER, ibo[0]);
-        gl.glBufferData(GL3.GL_ELEMENT_ARRAY_BUFFER, model.getIndexCount() * 4, model.getIndexBuffer(), GL3.GL_STATIC_DRAW);
+        gl.glBufferData(GL3.GL_ELEMENT_ARRAY_BUFFER, model.getFaceIndexCount() * 4, model.getFaceIndexBuffer(), GL3.GL_STATIC_DRAW);
 
         // generate Vertex Buffer Object
         gl.glGenBuffers(1, IntBuffer.wrap(vbo));
@@ -57,7 +57,7 @@ public class GLEventListenerImpl implements GLEventListener{
         gl.glBufferData(GL3.GL_ARRAY_BUFFER, model.getVertexCount() * 4, model.getVertexBuffer(), GL3.GL_STATIC_DRAW);
 
         // generate Normal Buffer Object
-        if (model.normal()) {
+        if (model.getNormalCount() > 0) {
             gl.glGenBuffers(1, IntBuffer.wrap(nbo));
             gl.glBindBuffer(GL3.GL_ARRAY_BUFFER, nbo[0]);
             gl.glBufferData(GL3.GL_ARRAY_BUFFER, model.getNormalCount() * 4, model.getNormalBuffer(), GL3.GL_STATIC_DRAW);
@@ -73,11 +73,12 @@ public class GLEventListenerImpl implements GLEventListener{
     @Override
     public void dispose(GLAutoDrawable glautodrawable) {
         animator.stop();
+        shader.destroy(glautodrawable.getGL().getGL3());
     }
 
     @Override
     public void display(GLAutoDrawable drawable) {
-        framecounter = framecounter + 0.02f;
+        framecounter = framecounter + 0.01f;
 
         GL3 gl = drawable.getGL().getGL3();
 
@@ -100,13 +101,12 @@ public class GLEventListenerImpl implements GLEventListener{
         // View
         Matrix4 mat4 = new Matrix4();
         mat4.makePerspective(-50, 0.66f, 0.1f, 100f);
-        mat4.scale(10, 10, 10);
-        mat4.translate(0, -0.1f, -1f);
+        mat4.translate(0, -0.1f, -2f);
         mat4.rotate(framecounter, 0, 1, 0);
         shader.setUniform(gl, "model", mat4);
 
         // draw the triangles
-        gl.glDrawElements(GL3.GL_TRIANGLES, model.getIndexCount(), GL3.GL_UNSIGNED_SHORT, 0);
+        gl.glDrawElements(GL3.GL_TRIANGLES, model.getFaceIndexCount(), GL3.GL_UNSIGNED_SHORT, 0);
 
         gl.glDisableVertexAttribArray(0);
         gl.glDisableVertexAttribArray(1);
@@ -124,7 +124,7 @@ public class GLEventListenerImpl implements GLEventListener{
         gl.glVertexAttribPointer(0, 3, GL3.GL_FLOAT, false, 0, 0);
 
         // normal buffer
-        if (model.normal()) {
+        if (model.getNormalCount() > 0) {
             gl.glEnableVertexAttribArray(1);
             gl.glBindBuffer(GL3.GL_ARRAY_BUFFER, nbo[0]);
             gl.glVertexAttribPointer(1, 3, GL3.GL_FLOAT, false, 0, 0);

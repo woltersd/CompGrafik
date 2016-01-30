@@ -12,127 +12,74 @@ import javax.vecmath.Point3f;
 /**
  *
  * @author Robert
+ * @author Peter
  */
 public class ObjFile {
 
-    private final String VERTEX_NORMAL = "vn";
-    private final String VERTEX = "v";
-    private final String FACE = "f";
-
     private ArrayList<Point3f> vertexData;
     private ArrayList<Point3f> normalData;
-    private ArrayList<Short> faceIndexData;
-    private ArrayList<Short> normalIndexData;
+    private LinkedList<Short> faceIndexData;
+    private LinkedList<Short> normalIndexData;
 
-    private LinkedList<Point3f> glVertexData;
-    private LinkedList<Point3f> glNormalData;
-    private LinkedList<Short> glIndexData;
-
-    private static boolean normal = false;
-
-    public ObjFile(String objFilename) throws FileNotFoundException, IOException {
-        vertexData = new ArrayList();
-        normalData = new ArrayList();
-        faceIndexData = new ArrayList();
-        normalIndexData = new ArrayList();
-
+    public ObjFile(String objFilename) throws IOException {
+        vertexData = new ArrayList<>();
+        normalData = new ArrayList<>();
+        faceIndexData = new LinkedList<>();
+        normalIndexData = new LinkedList<>();
         parseObjFile(objFilename);
-
-        glVertexData = new LinkedList();
-        glNormalData = new LinkedList();
-        glIndexData = new LinkedList();
-
-        buildGLData();
     }
 
-    private void parseObjFile(String objFilename) throws FileNotFoundException, IOException {
+    private void parseObjFile(String objFilename) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(objFilename)));
 
-        String line = null;
+        String line;
         while (true) {
             line = bufferedReader.readLine();
             if (null == line) {
                 break;
             }
-            if (line.length() == 0) {
-                continue;
-            }
-            if (line.startsWith("#")) // comment
+            // empty or comment
+            if (line.length() == 0 || line.startsWith("#"))
             {
                 continue;
-            } else if (line.startsWith(VERTEX_NORMAL)) {
-                processVertexNormal(line);
-            } else if (line.startsWith(VERTEX)) {
-                processVertex(line);
-            } else if (line.startsWith(FACE)) {
-                processFace(line);
+            }
+            String[] values = line.split("\\s+");
+            // vertex
+            switch (values[0]) {
+                case "v":
+                    vertexData.add(new Point3f(Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])));
+                    break;
+                // vertexNormal
+                case "vn":
+                    normalData.add(new Point3f(Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])));
+                    break;
+                // face
+                case "f":
+                    processFace(values);
+                    break;
             }
         }
         bufferedReader.close();
     }
 
-    private void processVertex(String line) {
-        String[] values = line.split("\\s+");
-
-        vertexData.add(new Point3f(Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])));
-    }
-
-    private void processVertexNormal(String line) {
-        normal = true;
-        String[] values = line.split("\\s+");
-        normalData.add(new Point3f(Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])));
-    }
-
-    private void processFace(String line) {
-        if (normal) {
-            String[] values = line.split("\\s+"), val;
+    private void processFace(String[] values) {
             for (int i = 1; i < values.length; i++) {
-                val = values[i].split("//");
-                faceIndexData.add((short) (Short.parseShort(val[0]) - 1));
-                normalIndexData.add((short) (Short.parseShort(val[1]) - 1));
-            }
-        } else {
-            String[] values = line.split("\\s+");
-            for (int i = 1; i < values.length; i++) {
-                faceIndexData.add((short) (Short.parseShort(values[i]) - 1));
-            }
-        }
-    }
-
-    private void buildGLData() {
-        for (int i = 0; i < faceIndexData.size(); i++) {
-            //TODO look again
-            short y = (short) glVertexData.indexOf(vertexData.get(faceIndexData.get(i)));
-            if (y == -1) {
-                addGLVertex(i);
-            } else {
-                if (!normal()) {
-                    glIndexData.add(y);
-                }
-                else if (glNormalData.get(y) == normalData.get(normalIndexData.get(i))) {
-                    glIndexData.add(y);
-                } else {
-                    addGLVertex(i);
+                String[] index = values[i].split("/");
+                faceIndexData.add((short) (Short.parseShort(index[0]) - 1));
+                // vt 2nd value not used right now
+                // if (val.length >= 1 && !val[1].isEmpty()) {
+                //
+                // }
+                if (index.length == 2 && !index[2].isEmpty()) {
+                    normalIndexData.add((short) (Short.parseShort(index[2]) - 1));
                 }
             }
-
-        }
-    }
-
-    private void addGLVertex(int i) {
-        glVertexData.add(vertexData.get(faceIndexData.get(i)));
-
-        if (normal) {
-            glNormalData.add(normalData.get(normalIndexData.get(i)));
-        }
-
-        glIndexData.add((short) (glVertexData.size() - 1));
     }
 
     public FloatBuffer getVertexBuffer() {
-        FloatBuffer vertexBuffer = FloatBuffer.allocate(getVertexCount());
+        FloatBuffer vertexBuffer = FloatBuffer.allocate(vertexData.size() * 3);
 
-        for (Point3f each : glVertexData) {
+        for (Point3f each : vertexData) {
             GLBuffers.putf(vertexBuffer, each.x);
             GLBuffers.putf(vertexBuffer, each.y);
             GLBuffers.putf(vertexBuffer, each.z);
@@ -142,9 +89,9 @@ public class ObjFile {
     }
 
     public FloatBuffer getNormalBuffer() {
-        FloatBuffer normalBuffer = FloatBuffer.allocate(getNomalCount());
+        FloatBuffer normalBuffer = FloatBuffer.allocate(normalData.size() * 3) ;
 
-        for (Point3f each : glNormalData) {
+        for (Point3f each : normalData) {
             GLBuffers.putf(normalBuffer, each.x);
             GLBuffers.putf(normalBuffer, each.y);
             GLBuffers.putf(normalBuffer, each.z);
@@ -153,47 +100,12 @@ public class ObjFile {
         return normalBuffer;
     }
 
-    public ShortBuffer getIndexBuffer() {
-        ShortBuffer indexBuffer = ShortBuffer.allocate(glIndexData.size());
-
-        for (short each : glIndexData) {
-            GLBuffers.puts(indexBuffer, each);
+    public ShortBuffer getFaceIndexBuffer() {
+        ShortBuffer faceIndexBuffer = ShortBuffer.allocate(faceIndexData.size() * 3);
+        for (short each : faceIndexData) {
+            GLBuffers.puts(faceIndexBuffer, each);
         }
-        indexBuffer.rewind();
-        return indexBuffer;
+        faceIndexBuffer.rewind();
+        return faceIndexBuffer;
     }
-
-    public FloatBuffer getComboBuffer() {
-        FloatBuffer comboBuffer = FloatBuffer.allocate(getVertexCount() + getNomalCount());
-
-        for (Point3f each : glVertexData) {
-            GLBuffers.putf(comboBuffer, each.x);
-            GLBuffers.putf(comboBuffer, each.y);
-            GLBuffers.putf(comboBuffer, each.z);
-        }
-        for (Point3f each : glNormalData) {
-            GLBuffers.putf(comboBuffer, each.x);
-            GLBuffers.putf(comboBuffer, each.y);
-            GLBuffers.putf(comboBuffer, each.z);
-        }
-        comboBuffer.rewind();
-        return comboBuffer;
-    }
-
-    public int getVertexCount() {
-        return glVertexData.size() * 3;
-    }
-
-    public int getNomalCount() {
-        return glNormalData.size() * 3;
-    }
-
-    public int getIndexCount() {
-        return glIndexData.size();
-    }
-
-    boolean normal() {
-        return normal;
-    }
-
 }

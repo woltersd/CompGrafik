@@ -50,11 +50,11 @@ public class Shader{
     }
 
     public void destroy(GL3 gl) {
-        for (int i = 0; i < vertexShaders.size(); i++) {
-            gl.glDeleteShader(vertexShaders.get(i));
+        for (Integer vertexShader : vertexShaders) {
+            gl.glDeleteShader(vertexShader);
         }
-        for (int i = 0; i < fragmentShaders.size(); i++) {
-            gl.glDeleteShader(fragmentShaders.get(i));
+        for (Integer fragmentShader : fragmentShaders) {
+            gl.glDeleteShader(fragmentShader);
         }
         if (progId != 0) {
             gl.glDeleteProgram(progId);
@@ -70,7 +70,7 @@ public class Shader{
     }
 
     public final void attachVertexShader(GL3 gl, String filename) {
-
+        //
         InputStream inputStream = null;
 
         try {
@@ -78,10 +78,13 @@ public class Shader{
         } catch (FileNotFoundException e) {
             System.err.println("Unable to find the shader file " + filename);
         }
+        if (inputStream == null) {
+            System.err.println("Problem with InputStream");
+            return;
+        }
         BufferedReader input = null;
         String content = "";
         try {
-
             input = new BufferedReader(new InputStreamReader(inputStream));
             String line;
 
@@ -141,6 +144,10 @@ public class Shader{
         } catch (FileNotFoundException e) {
             System.err.println("Unable to find the shader file " + filename);
         }
+        if (inputStream == null) {
+            System.err.println("Problem with InputStream");
+            return;
+        }
 
         String content = "";
         BufferedReader input = null;
@@ -148,7 +155,6 @@ public class Shader{
         try {
             input = new BufferedReader(new InputStreamReader(inputStream));
             String line;
-
             while ((line = input.readLine()) != null) {
                 content += line + "\n";
             }
@@ -232,12 +238,12 @@ public class Shader{
     public final void initializeProgram(GL3 gl, boolean cleanUp) {
         progId = gl.glCreateProgram();
 
-        for (int i = 0; i < vertexShaders.size(); i++) {
-            gl.glAttachShader(progId, vertexShaders.get(i));
+        for (Integer vertexShader : vertexShaders) {
+            gl.glAttachShader(progId, vertexShader);
         }
 
-        for (int i = 0; i < fragmentShaders.size(); i++) {
-            gl.glAttachShader(progId, fragmentShaders.get(i));
+        for (Integer fragmentShader : fragmentShaders) {
+            gl.glAttachShader(progId, fragmentShader);
         }
 
         gl.glLinkProgram(progId);
@@ -259,14 +265,14 @@ public class Shader{
         gl.glValidateProgram(progId);
 
         if (cleanUp) {
-            for (int i = 0; i < vertexShaders.size(); i++) {
-                gl.glDetachShader(progId, vertexShaders.get(i));
-                gl.glDeleteShader(vertexShaders.get(i));
+            for (Integer vertexShader : vertexShaders) {
+                gl.glDetachShader(progId, vertexShader);
+                gl.glDeleteShader(vertexShader);
             }
 
-            for (int i = 0; i < fragmentShaders.size(); i++) {
-                gl.glDetachShader(progId, fragmentShaders.get(i));
-                gl.glDeleteShader(fragmentShaders.get(i));
+            for (Integer fragmentShader : fragmentShaders) {
+                gl.glDetachShader(progId, fragmentShader);
+                gl.glDeleteShader(fragmentShader);
             }
         }
     }
