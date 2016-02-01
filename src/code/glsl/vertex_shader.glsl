@@ -10,7 +10,7 @@ out vec3 fragVert;
 
 void main()
 {
-   fragNormal = normal;
+   fragNormal = vec3(0.0f, -0.0f, 1.0f);
    fragVert = position;
 
    gl_Position = model * vec4(position, 1.0f);

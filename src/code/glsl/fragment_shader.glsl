@@ -22,7 +22,7 @@ void main()
     vec3 normal = normalize(normalMatrix * fragNormal);
 
     //calculate the location of this fragment (pixel) in world coordinates
-    vec3 fragPosition = vec3(model * vec4(fragVert, 1));
+    vec3 fragPosition = vec3(model * vec4(normal, 1));
 
     //calculate the vector from this pixels surface to the light source
     vec3 surfaceToLight = light.position - fragPosition;
@@ -32,7 +32,7 @@ void main()
     /*if (brightness < 0) {
         brightness = -brightness;
     }*/
-    brightness = 1;//clamp(brightness, 0, 1);
+    brightness = clamp(brightness, 0, 1);
 
    // finalColor = vec4(brightness * light.intensities * vertexColor.rgb, vertexColor.a);
     finalColor = vec4(brightness * light.intensities * vertexColor.rgb, vertexColor.a);

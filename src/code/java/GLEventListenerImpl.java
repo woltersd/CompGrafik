@@ -21,7 +21,7 @@ public class GLEventListenerImpl implements GLEventListener{
     private int[] nbo = new int[1]; //Normal Buffer Object
     private int[] ibo = new int[1]; //Index  Buffer Object
 
-    private GLModel model = new GLModel(System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/bunny_norm.obj");
+    private GLModel model = new GLModel(System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/triangle.obj");
 
     private Shader shader;
 
@@ -95,7 +95,7 @@ public class GLEventListenerImpl implements GLEventListener{
         shader.setUniform(gl, "vertexColor", new float[]{1.0f, 1.0f, 1.0f, 1f}, 4);
 
         // set light
-        shader.setUniform(gl, "light.position", new float[] {10f, 10f, 0f}, 3);
+        shader.setUniform(gl, "light.position", new float[] {0f, 0f, 10f}, 3);
         shader.setUniform(gl, "light.intensities", new float[] {1f, 1f, 1f}, 3);
 
         // View
@@ -103,6 +103,7 @@ public class GLEventListenerImpl implements GLEventListener{
         mat4.makePerspective(-50, 0.66f, 0.1f, 100f);
         mat4.translate(0, -0.1f, -2f);
         mat4.rotate(framecounter, 0, 1, 0);
+        mat4.scale(0.2f, 0.2f, 0.2f);
         shader.setUniform(gl, "model", mat4);
 
         // draw the triangles
