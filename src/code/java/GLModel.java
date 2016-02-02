@@ -51,7 +51,10 @@ public class GLModel {
         for (int i = 0; i < objFile.getFaceIndexData().size(); i++) {
             boolean found = false;
             Point3f vertex = objFile.getVertexData().get(objFile.getFaceIndexData().get(i));
-            Point3f normal = objFile.getNormalData().get(objFile.getNormalIndexData().get(i));
+            Point3f normal = new Point3f();
+            if(normal()){
+                normal = objFile.getNormalData().get(objFile.getNormalIndexData().get(i));
+            }
 
             // Look if vertex+normal already saved
             for(int x = 0; i<glVertexData.size(); x++){
