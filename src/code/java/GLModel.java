@@ -7,15 +7,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 /**
  * @author Robert
  */
 public class GLModel {
-    private LinkedList<Point3f> glVertexData;
-    private LinkedList<Point3f> glNormalData;
-    private LinkedList<Short> glIndexData;
+    private ArrayList<Point3f> glVertexData;
+    private ArrayList<Point3f> glNormalData;
+    private ArrayList<Short> glIndexData;
 
     private int vertexCount = 0;
     private int normalCount = 0;
@@ -35,12 +35,28 @@ public class GLModel {
             System.err.println("IOException " + objPath);
         }
 
-        glVertexData = new LinkedList();
-        glNormalData = new LinkedList();
-        glIndexData = new LinkedList();
+        glVertexData = new ArrayList<>();
+        glNormalData = new ArrayList<>();
+        glIndexData = new ArrayList<>();
         normal = objFile.normal();
 
         buildGLData();
+
+        for(Point3f each: glVertexData){
+            System.out.print(each.x+", ");
+            System.out.print(each.y+", ");
+            System.out.print(each.z+", ");
+            System.out.println();
+
+        }
+        System.out.println();
+        for(Point3f each: glNormalData){
+            System.out.print(each.x+", ");
+            System.out.print(each.y+", ");
+            System.out.print(each.z+", ");
+            System.out.println();
+
+        }
 
         vertexCount = glVertexData.size() * 3;
         normalCount = glNormalData.size() * 3;
@@ -57,7 +73,7 @@ public class GLModel {
             }
 
             // Look if vertex+normal already saved
-            for(int x = 0; i<glVertexData.size(); x++){
+            for(int x = 0; x<glVertexData.size(); x++){
                 if(glVertexData.get(x) == vertex){
                     if(normal()){
                         found = true;
