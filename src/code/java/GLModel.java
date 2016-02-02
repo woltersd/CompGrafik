@@ -151,7 +151,7 @@ public class GLModel {
     }
 
     public boolean normal(){
-        return objFile.normal();
+        return normal;
     }
 
 }

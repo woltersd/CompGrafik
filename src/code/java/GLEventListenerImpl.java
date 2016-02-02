@@ -48,7 +48,7 @@ public class GLEventListenerImpl implements GLEventListener{
     }
 
     private void initializeBuffers(GL3 gl) {
-        // generate Indice Buffer Object
+        // generate Index Buffer Object
         gl.glGenBuffers(1, IntBuffer.wrap(ibo));
         gl.glBindBuffer(GL3.GL_ELEMENT_ARRAY_BUFFER, ibo[0]);
         gl.glBufferData(GL3.GL_ELEMENT_ARRAY_BUFFER, model.getIndexCount() * 4, model.getIndexBuffer(), GL3.GL_STATIC_DRAW);
@@ -60,7 +60,7 @@ public class GLEventListenerImpl implements GLEventListener{
         gl.glBufferData(GL3.GL_ARRAY_BUFFER, model.getVertexCount() * 4, model.getVertexBuffer(), GL3.GL_STATIC_DRAW);
 
         // generate Normal Buffer Object
-        if (model.getNormalCount() > 0) {
+        if (model.normal()) {
             gl.glGenBuffers(1, IntBuffer.wrap(nbo));
             gl.glBindBuffer(GL3.GL_ARRAY_BUFFER, nbo[0]);
             gl.glBufferData(GL3.GL_ARRAY_BUFFER, model.getNormalCount() * 4, model.getNormalBuffer(), GL3.GL_STATIC_DRAW);
