@@ -54,7 +54,7 @@ public class Main {
             }
         });
         // makes problems
-       // device.setFullScreenWindow(frame);
+        // device.setFullScreenWindow(frame);
         frame.setSize(width, height);
         frame.setVisible(true);
 

@@ -21,7 +21,7 @@ public class GLEventListenerImpl implements GLEventListener{
     private int[] nbo = new int[1]; //Normal Buffer Object
     private int[] ibo = new int[1]; //Index  Buffer Object
 
-    private GLModel model = new GLModel(System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/triangle.obj");
+    private GLModel model = new GLModel(System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/bunny_norm.obj");
 
     private Shader shader;
 
@@ -37,6 +37,8 @@ public class GLEventListenerImpl implements GLEventListener{
         gl.glGenVertexArrays(1, IntBuffer.wrap(vao));
         gl.glBindVertexArray(vao[0]);
 
+        gl.glEnable(GL3.GL_DEPTH_TEST);
+
         // initialize Shaders
         shader = new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "fragment_shader.glsl");
 
@@ -49,7 +51,8 @@ public class GLEventListenerImpl implements GLEventListener{
         // generate Indice Buffer Object
         gl.glGenBuffers(1, IntBuffer.wrap(ibo));
         gl.glBindBuffer(GL3.GL_ELEMENT_ARRAY_BUFFER, ibo[0]);
-        gl.glBufferData(GL3.GL_ELEMENT_ARRAY_BUFFER, model.getFaceIndexCount() * 4, model.getFaceIndexBuffer(), GL3.GL_STATIC_DRAW);
+        gl.glBufferData(GL3.GL_ELEMENT_ARRAY_BUFFER, model.getIndexCount() * 4, model.getIndexBuffer(), GL3.GL_STATIC_DRAW);
+
 
         // generate Vertex Buffer Object
         gl.glGenBuffers(1, IntBuffer.wrap(vbo));
@@ -83,7 +86,7 @@ public class GLEventListenerImpl implements GLEventListener{
         GL3 gl = drawable.getGL().getGL3();
 
         gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        gl.glClear(GL3.GL_COLOR_BUFFER_BIT);
+        gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
 
         bindBuffers(gl);
 
@@ -95,19 +98,19 @@ public class GLEventListenerImpl implements GLEventListener{
         shader.setUniform(gl, "vertexColor", new float[]{1.0f, 1.0f, 1.0f, 1f}, 4);
 
         // set light
-        shader.setUniform(gl, "light.position", new float[] {0f, 0f, 10f}, 3);
+        shader.setUniform(gl, "light.position", new float[] {0f, 0f, -10f}, 3);
         shader.setUniform(gl, "light.intensities", new float[] {1f, 1f, 1f}, 3);
 
         // View
         Matrix4 mat4 = new Matrix4();
         mat4.makePerspective(-50, 0.66f, 0.1f, 100f);
-        mat4.translate(0, -0.1f, -2f);
+        mat4.translate(0.0f, -0.2f, -2.0f);
         mat4.rotate(framecounter, 0, 1, 0);
-        mat4.scale(0.2f, 0.2f, 0.2f);
+        mat4.scale(2.0f, 2.0f, 2.0f);
         shader.setUniform(gl, "model", mat4);
 
         // draw the triangles
-        gl.glDrawElements(GL3.GL_TRIANGLES, model.getFaceIndexCount(), GL3.GL_UNSIGNED_SHORT, 0);
+        gl.glDrawElements(GL3.GL_TRIANGLES, model.getIndexCount(), GL3.GL_UNSIGNED_SHORT, 0);
 
         gl.glDisableVertexAttribArray(0);
         gl.glDisableVertexAttribArray(1);

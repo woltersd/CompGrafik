@@ -1,111 +1,97 @@
+/*
+ *
+ */
 package code.java;
 
-import com.jogamp.opengl.util.GLBuffers;
-
 import java.io.*;
-import java.nio.FloatBuffer;
-import java.nio.ShortBuffer;
+import java.io.IOException;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import javax.vecmath.Point3f;
 
 /**
  *
  * @author Robert
- * @author Peter
  */
 public class ObjFile {
 
     private ArrayList<Point3f> vertexData;
     private ArrayList<Point3f> normalData;
-    private LinkedList<Short> faceIndexData;
-    private LinkedList<Short> normalIndexData;
+    private ArrayList<Short> faceIndexData;
+    private ArrayList<Short> normalIndexData;
 
-    public ObjFile(String objFilename) throws IOException {
+    private static boolean normal = false;
+
+    public ObjFile(String objFilename) throws FileNotFoundException, IOException {
         vertexData = new ArrayList<>();
         normalData = new ArrayList<>();
-        faceIndexData = new LinkedList<>();
-        normalIndexData = new LinkedList<>();
+        faceIndexData = new ArrayList<>();
+        normalIndexData = new ArrayList<>();
+
         parseObjFile(objFilename);
     }
 
-    private void parseObjFile(String objFilename) throws IOException {
+    private void parseObjFile(String objFilename) throws FileNotFoundException, IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(objFilename)));
 
-        String line;
+        String line = null;
+        String[] values;
         while (true) {
             line = bufferedReader.readLine();
             if (null == line) {
                 break;
             }
-            // empty or comment
-            if (line.length() == 0 || line.startsWith("#"))
-            {
+            if (line.length() == 0 || line.startsWith("#")) {
                 continue;
             }
-            String[] values = line.split("\\s+");
-            // vertex
-            switch (values[0]) {
-                case "v":
-                    vertexData.add(new Point3f(Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])));
-                    break;
-                // vertexNormal
-                case "vn":
-                    normalData.add(new Point3f(Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])));
-                    break;
-                // face
-                case "f":
-                    processFace(values);
-                    break;
+            if (line.startsWith("vn")) {
+                normal = true;
+                values = line.split("\\s+");
+                normalData.add(new Point3f(Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])));
+            } else if (line.startsWith("v")) {
+                values = line.split("\\s+");
+                vertexData.add(new Point3f(Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])));
+            } else if (line.startsWith("f")) {
+                processFace(line);
             }
         }
         bufferedReader.close();
     }
 
-    private void processFace(String[] values) {
+    private void processFace(String line) {
+        if (normal) {
+            String[] values = line.split("\\s+");
+            String[] val;
             for (int i = 1; i < values.length; i++) {
-                String[] index = values[i].split("/");
-                faceIndexData.add((short) (Short.parseShort(index[0]) - 1));
-                // vt 2nd value not used right now
-                // if (val.length >= 1 && !val[1].isEmpty()) {
-                //
-                // }
-                if (index.length == 2 && !index[2].isEmpty()) {
-                    normalIndexData.add((short) (Short.parseShort(index[2]) - 1));
-                }
+                val = values[i].split("//");
+                faceIndexData.add((short) (Short.parseShort(val[0]) - 1));
+                normalIndexData.add((short) (Short.parseShort(val[1]) - 1));
             }
-    }
-
-    public FloatBuffer getVertexBuffer() {
-        FloatBuffer vertexBuffer = FloatBuffer.allocate(vertexData.size() * 3);
-
-        for (Point3f each : vertexData) {
-            GLBuffers.putf(vertexBuffer, each.x);
-            GLBuffers.putf(vertexBuffer, each.y);
-            GLBuffers.putf(vertexBuffer, each.z);
+        } else {
+            String[] values = line.split("\\s+");
+            for (int i = 1; i < values.length; i++) {
+                faceIndexData.add((short) (Short.parseShort(values[i]) - 1));
+            }
         }
-        vertexBuffer.rewind();
-        return vertexBuffer;
     }
 
-    public FloatBuffer getNormalBuffer() {
-        FloatBuffer normalBuffer = FloatBuffer.allocate(normalData.size() * 3) ;
-
-        for (Point3f each : normalData) {
-            GLBuffers.putf(normalBuffer, each.x);
-            GLBuffers.putf(normalBuffer, each.y);
-            GLBuffers.putf(normalBuffer, each.z);
-        }
-        normalBuffer.rewind();
-        return normalBuffer;
+    public ArrayList<Point3f> getVertexData(){
+        return vertexData;
     }
 
-    public ShortBuffer getFaceIndexBuffer() {
-        ShortBuffer faceIndexBuffer = ShortBuffer.allocate(faceIndexData.size() * 3);
-        for (short each : faceIndexData) {
-            GLBuffers.puts(faceIndexBuffer, each);
-        }
-        faceIndexBuffer.rewind();
-        return faceIndexBuffer;
+    public ArrayList<Point3f> getNormalData(){
+        return normalData;
     }
+
+    public ArrayList<Short> getFaceIndexData(){
+        return faceIndexData;
+    }
+
+    public ArrayList<Short> getNormalIndexData(){
+        return normalIndexData;
+    }
+
+    boolean normal() {
+        return normal;
+    }
+
 }
