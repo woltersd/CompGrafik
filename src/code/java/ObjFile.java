@@ -26,14 +26,14 @@ public class ObjFile {
         normalData = new ArrayList<>();
         faceIndexData = new ArrayList<>();
         normalIndexData = new ArrayList<>();
-
+        //TODO normalize?
         parseObjFile(objFilename);
     }
 
     private void parseObjFile(String objFilename) throws FileNotFoundException, IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(objFilename)));
 
-        String line = null;
+        String line;
         String[] values;
         while (true) {
             line = bufferedReader.readLine();

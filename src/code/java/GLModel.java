@@ -42,22 +42,6 @@ public class GLModel {
 
         buildGLData();
 
-        for(Point3f each: glVertexData){
-            System.out.print(each.x+", ");
-            System.out.print(each.y+", ");
-            System.out.print(each.z+", ");
-            System.out.println();
-
-        }
-        System.out.println();
-        for(Point3f each: glNormalData){
-            System.out.print(each.x+", ");
-            System.out.print(each.y+", ");
-            System.out.print(each.z+", ");
-            System.out.println();
-
-        }
-
         vertexCount = glVertexData.size() * 3;
         normalCount = glNormalData.size() * 3;
         indexCount = glIndexData.size();
@@ -71,11 +55,10 @@ public class GLModel {
             if(normal()){
                 normal = objFile.getNormalData().get(objFile.getNormalIndexData().get(i));
             }
-
             // Look if vertex+normal already saved
             for(int x = 0; x<glVertexData.size(); x++){
                 if(glVertexData.get(x) == vertex){
-                    if(normal()){
+                    if(!normal()){
                         found = true;
                         glIndexData.add((short) x);
                         break;
@@ -134,16 +117,15 @@ public class GLModel {
     public FloatBuffer getComboBuffer() {
         FloatBuffer comboBuffer = FloatBuffer.allocate(getVertexCount() + getNormalCount());
 
-        for (Point3f each : glVertexData) {
-            GLBuffers.putf(comboBuffer, each.x);
-            GLBuffers.putf(comboBuffer, each.y);
-            GLBuffers.putf(comboBuffer, each.z);
+        for (int i = 0; i<glVertexData.size(); i++) {
+            GLBuffers.putf(comboBuffer, glVertexData.get(i).x);
+            GLBuffers.putf(comboBuffer, glVertexData.get(i).y);
+            GLBuffers.putf(comboBuffer, glVertexData.get(i).z);
+            GLBuffers.putf(comboBuffer, glNormalData.get(i).x);
+            GLBuffers.putf(comboBuffer, glNormalData.get(i).y);
+            GLBuffers.putf(comboBuffer, glNormalData.get(i).z);
         }
-        for (Point3f each : glNormalData) {
-            GLBuffers.putf(comboBuffer, each.x);
-            GLBuffers.putf(comboBuffer, each.y);
-            GLBuffers.putf(comboBuffer, each.z);
-        }
+
         comboBuffer.rewind();
         return comboBuffer;
     }

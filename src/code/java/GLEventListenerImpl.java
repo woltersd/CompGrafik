@@ -18,10 +18,13 @@ public class GLEventListenerImpl implements GLEventListener{
     private int[] vao = new int[1]; //Vertex Array Object
 
     private int[] vbo = new int[1]; //Vertex Buffer Object
-    private int[] nbo = new int[1]; //Normal Buffer Object
     private int[] ibo = new int[1]; //Index  Buffer Object
 
-    private GLModel model = new GLModel(System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/bunny_norm.obj");
+    //private int[] tbo = new int[1]; //Texture Buffer Object
+
+
+    //private GLCam model = new GLCam(0);
+    private GLModel model = new GLModel(System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/triangle_norm.obj");
 
     private Shader shader;
 
@@ -53,19 +56,21 @@ public class GLEventListenerImpl implements GLEventListener{
         gl.glBindBuffer(GL3.GL_ELEMENT_ARRAY_BUFFER, ibo[0]);
         gl.glBufferData(GL3.GL_ELEMENT_ARRAY_BUFFER, model.getIndexCount() * 4, model.getIndexBuffer(), GL3.GL_STATIC_DRAW);
 
-
-        // generate Vertex Buffer Object
-        gl.glGenBuffers(1, IntBuffer.wrap(vbo));
-        gl.glBindBuffer(GL3.GL_ARRAY_BUFFER, vbo[0]);
-        gl.glBufferData(GL3.GL_ARRAY_BUFFER, model.getVertexCount() * 4, model.getVertexBuffer(), GL3.GL_STATIC_DRAW);
-
-        // generate Normal Buffer Object
+        // generate vertex buffer object
         if (model.normal()) {
-            gl.glGenBuffers(1, IntBuffer.wrap(nbo));
-            gl.glBindBuffer(GL3.GL_ARRAY_BUFFER, nbo[0]);
-            gl.glBufferData(GL3.GL_ARRAY_BUFFER, model.getNormalCount() * 4, model.getNormalBuffer(), GL3.GL_STATIC_DRAW);
+            gl.glGenBuffers(1, IntBuffer.wrap(vbo));
+            gl.glBindBuffer(GL3.GL_ARRAY_BUFFER, vbo[0]);
+            gl.glBufferData(GL3.GL_ARRAY_BUFFER, (model.getNormalCount() + model.getVertexCount()) * 4, model.getComboBuffer(), GL3.GL_STATIC_DRAW);
+        } else{
+            gl.glGenBuffers(1, IntBuffer.wrap(vbo));
+            gl.glBindBuffer(GL3.GL_ARRAY_BUFFER, vbo[0]);
+            gl.glBufferData(GL3.GL_ARRAY_BUFFER, model.getVertexCount() * 4, model.getVertexBuffer(), GL3.GL_STATIC_DRAW);
         }
-
+        /*
+        gl.glGenTextures(1, IntBuffer.wrap(tbo));
+        gl.glBindTexture(GL3.GL_TEXTURE_2D, tbo[0]);
+        gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_BGR, 500, 500, 0, gl.GL_BGR, gl.GL_UNSIGNED_BYTE, model.getTexImage());
+        */
     }
 
     @Override
@@ -104,9 +109,10 @@ public class GLEventListenerImpl implements GLEventListener{
         // View
         Matrix4 mat4 = new Matrix4();
         mat4.makePerspective(-50, 0.66f, 0.1f, 100f);
-        mat4.translate(0.0f, -0.2f, -2.0f);
+        mat4.translate(0.0f, 0.0f, -3.0f);
         mat4.rotate(framecounter, 0, 1, 0);
-        mat4.scale(2.0f, 2.0f, 2.0f);
+        //mat4.scale(2.0f, 2.0f, 2.0f);
+        mat4.scale(0.4f, 0.4f, 0.4f);
         shader.setUniform(gl, "model", mat4);
 
         // draw the triangles
@@ -122,16 +128,18 @@ public class GLEventListenerImpl implements GLEventListener{
         // index buffer
         gl.glBindBuffer(GL3.GL_ELEMENT_ARRAY_BUFFER, ibo[0]);
 
-        // vertex buffer
-        gl.glEnableVertexAttribArray(0);
-        gl.glBindBuffer(GL3.GL_ARRAY_BUFFER, vbo[0]);
-        gl.glVertexAttribPointer(0, 3, GL3.GL_FLOAT, false, 0, 0);
-
-        // normal buffer
-        if (model.getNormalCount() > 0) {
+        // vertex+normal buffer
+        if (model.normal()) {
+            gl.glBindBuffer(GL3.GL_ARRAY_BUFFER, vbo[0]);
+            gl.glEnableVertexAttribArray(0);
+            gl.glVertexAttribPointer(0, 3, GL3.GL_FLOAT, false, 24, 0);
             gl.glEnableVertexAttribArray(1);
-            gl.glBindBuffer(GL3.GL_ARRAY_BUFFER, nbo[0]);
-            gl.glVertexAttribPointer(1, 3, GL3.GL_FLOAT, false, 0, 0);
+            gl.glVertexAttribPointer(1, 3, GL3.GL_FLOAT, false, 24, 12);
+        }
+        else{
+            gl.glEnableVertexAttribArray(0);
+            gl.glBindBuffer(GL3.GL_ARRAY_BUFFER, vbo[0]);
+            gl.glVertexAttribPointer(0, 3, GL3.GL_FLOAT, false, 0, 0);
         }
     }
 
