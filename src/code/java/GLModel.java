@@ -1,8 +1,10 @@
 package code.java;
 
+import com.jogamp.opengl.math.Matrix4;
 import com.jogamp.opengl.util.GLBuffers;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -11,6 +13,7 @@ import java.util.ArrayList;
 
 /**
  * @author Robert
+ * @author peter
  */
 public class GLModel {
     private ArrayList<Point3f> glVertexData;
@@ -20,6 +23,8 @@ public class GLModel {
     private int vertexCount = 0;
     private int normalCount = 0;
     private int indexCount = 0;
+
+    private Matrix4 modelMatrix;
 
     private ObjFile objFile;
 
@@ -45,6 +50,8 @@ public class GLModel {
         vertexCount = glVertexData.size() * 3;
         normalCount = glNormalData.size() * 3;
         indexCount = glIndexData.size();
+
+        modelMatrix = new Matrix4();
     }
 
     private void buildGLData() {
@@ -78,6 +85,18 @@ public class GLModel {
                 glIndexData.add((short) (glVertexData.size() - 1));
             }
         }
+    }
+
+    public void setModelMatrixOffset(float offsetX, float offsetY, float offsetZ) {
+        modelMatrix.translate(offsetX, offsetY,offsetZ);
+    }
+
+    public void setModelMatrixRotation(float rotationAngle, float vectorX,float vectorY, float vectorZ) {
+        modelMatrix.rotate(rotationAngle, vectorX, vectorY, vectorZ);
+    }
+
+    public void setModelMatrixScale(float xScale, float yScale, float zScale) {
+        modelMatrix.scale(xScale, yScale, zScale);
     }
 
     public FloatBuffer getVertexBuffer() {
@@ -155,4 +174,7 @@ public class GLModel {
         return normal;
     }
 
+    public Matrix4 getModelMatrix() {
+        return modelMatrix;
+    }
 }

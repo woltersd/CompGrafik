@@ -42,7 +42,7 @@ public class Main {
         GLProfile glp = GLProfile.getGL2GL3();
         GLCapabilities caps = new GLCapabilities(glp);
         final GLCanvas canvas = new GLCanvas(caps);
-        GLEventListenerImpl gLEventListener = new GLEventListenerImpl();
+        GLEventListenerImpl gLEventListener = new GLEventListenerImpl(canvas);
         canvas.setSize(width, height);
         canvas.addGLEventListener(gLEventListener);
         frame.getContentPane().add(canvas);

@@ -11,6 +11,7 @@ import javax.vecmath.Point3f;
 /**
  *
  * @author Robert
+ * @author peter
  */
 public class ObjFile {
 
@@ -21,7 +22,7 @@ public class ObjFile {
 
     private static boolean normal = false;
 
-    public ObjFile(String objFilename) throws FileNotFoundException, IOException {
+    public ObjFile(String objFilename) throws IOException {
         vertexData = new ArrayList<>();
         normalData = new ArrayList<>();
         faceIndexData = new ArrayList<>();
@@ -30,7 +31,7 @@ public class ObjFile {
         parseObjFile(objFilename);
     }
 
-    private void parseObjFile(String objFilename) throws FileNotFoundException, IOException {
+    private void parseObjFile(String objFilename) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new FileReader(new File(objFilename)));
 
         String line;
@@ -58,18 +59,17 @@ public class ObjFile {
     }
 
     private void processFace(String line) {
-        if (normal) {
-            String[] values = line.split("\\s+");
-            String[] val;
-            for (int i = 1; i < values.length; i++) {
-                val = values[i].split("//");
-                faceIndexData.add((short) (Short.parseShort(val[0]) - 1));
-                normalIndexData.add((short) (Short.parseShort(val[1]) - 1));
-            }
-        } else {
-            String[] values = line.split("\\s+");
-            for (int i = 1; i < values.length; i++) {
-                faceIndexData.add((short) (Short.parseShort(values[i]) - 1));
+        String[] values = line.split("\\s+");
+        String[] val;
+        for (int i = 1; i < values.length; i++) {
+            val = values[i].split("/");
+            faceIndexData.add((short) (Short.parseShort(val[0]) - 1));
+            // vt 2nd value not used right now
+            // if (val.length >= 2 && !val[1].isEmpty()) {
+            //
+            // }
+            if (val.length == 3 && !val[2].isEmpty()) {
+                normalIndexData.add((short) (Short.parseShort(val[2]) - 1));
             }
         }
     }

@@ -235,6 +235,27 @@ public class Shader{
         gl.glUniformMatrix4fv(id, 1, false, matrix.getMatrix(), 0);
     }
 
+    public void setUniform(GL3 gl, String name, float[] matrix) {
+        int id = gl.glGetUniformLocation(progId, name);
+        if (id == -1) {
+            System.err.println("Warning: Invalid uniform parameter " + name);
+            return;
+        } else if (matrix.length != 16) {
+            System.err.println("Warning: Illegal matrix format " + name);
+            return;
+        }
+        switch (matrix.length) {
+            case 9:
+                gl.glUniformMatrix3fv(id,1,false,matrix, 0);
+                break;
+            case 16:
+                gl.glUniformMatrix4fv(id,1,false,matrix, 0);
+                break;
+            default:
+                System.err.println("Warning: Illegal matrix format " + name);
+        }
+}
+
     public final void initializeProgram(GL3 gl, boolean cleanUp) {
         progId = gl.glCreateProgram();
 
