@@ -256,6 +256,16 @@ public class Shader{
         }
 }
 
+    public void setUniform(GL3 gl, String name, int val) {
+        int id = gl.glGetUniformLocation(progId, name);
+
+        if (id == -1) {
+            System.err.println("Warning: Invalid uniform parameter " + name);
+            return;
+        }
+        gl.glUniform1i(id, val);
+    }
+
     public final void initializeProgram(GL3 gl, boolean cleanUp) {
         progId = gl.glCreateProgram();
 
