@@ -66,20 +66,20 @@ public class Camera {
 
     private void rotateAroundXAxis(float angle) {
         cameraMatrix.rotate(angle, xAxis[0], xAxis[1], xAxis[2]);
-        yAxis = rotateAxis(angle,xAxis, yAxis);
-        zAxis = rotateAxis(angle, xAxis, zAxis);
+        yAxis = rotateAxis(-angle,xAxis, yAxis);
+        zAxis = rotateAxis(-angle, xAxis, zAxis);
     }
 
     private void rotateAroundYAxis(float angle) {
         cameraMatrix.rotate(angle, yAxis[0], yAxis[1], yAxis[2]);
-        xAxis = rotateAxis(angle, yAxis, xAxis);
-        zAxis = rotateAxis(angle, yAxis, zAxis);
+        xAxis = rotateAxis(-angle, yAxis, xAxis);
+        zAxis = rotateAxis(-angle, yAxis, zAxis);
     }
 
     private void rotateAroundZAxis(float angle) {
         cameraMatrix.rotate(angle, zAxis[0], zAxis[1], zAxis[2]);
-        xAxis = rotateAxis(angle, zAxis, xAxis);
-        yAxis = rotateAxis(angle, zAxis, yAxis);
+        xAxis = rotateAxis(-angle, zAxis, xAxis);
+        yAxis = rotateAxis(-angle, zAxis, yAxis);
     }
 
     private float[] transformVector(float x, float y, float z) {
@@ -137,7 +137,7 @@ public class Camera {
 
         @Override
         public void mouseMoved(MouseEvent e) {
-            final float rotationScale = 0.001f;
+            final float rotationScale = 0.01f;
            if (oldX == null) {
                oldX = e.getX();
                oldY = e.getY();
