@@ -58,6 +58,28 @@ public class GLEventListenerImpl implements GLEventListener{
     private void initializeModels (GL3 gl) {
         GLModel model;
         modelList = new LinkedList<>();
+
+        model = new GLModel(gl, "field.obj");
+        modelList.add(model);
+        model = new GLModel(gl, "field.obj");
+        model.setModelMatrixOffset(-8f, 0f, 0f);
+        modelList.add(model);
+        model = new GLModel(gl, "cylinder.obj");
+        model.setModelMatrixOffset(0f, 0f, 4f);
+        modelList.add(model);
+        model = new GLModel(gl, "cylinder.obj");
+        model.setModelMatrixOffset(0f, 0f, -4f);
+        modelList.add(model);
+        model = new GLModel(gl, "net.obj");
+        modelList.add(model);
+        //model = new GLModel(gl, "ball.obj");
+        //model.setModelMatrixScale(0.01f,0.01f,0.01f);
+        //modelList.add(model);
+
+
+        /*
+        GLModel model;
+        modelList = new LinkedList<>();
         model =  new GLModel(gl, "triangle.obj");
         model.setModelMatrixRotation(3.14159265359f, 0, 0, 1);
         model.setModelMatrixOffset(0f, 0f, -50f);
@@ -76,6 +98,7 @@ public class GLEventListenerImpl implements GLEventListener{
         model.setModelMatrixOffset(25f,2f, 0f);
         model.setModelMatrixScale(10,10,10);
         modelList.add(model);
+        */
 
        /* model = new GLCam(gl, 0);
         model.setModelMatrixOffset(-1f,1f, -15f);

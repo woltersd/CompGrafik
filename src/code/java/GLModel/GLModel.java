@@ -217,8 +217,6 @@ public class GLModel {
             image = Imgcodecs.imread(System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/replacement.png");
         }
 
-        System.out.println(image);
-
         byte[] bytes = new byte[image.rows() * image.cols() * image.channels()];
         image.get(0, 0, bytes);
         return GLBuffers.newDirectByteBuffer(bytes);
