@@ -1,5 +1,6 @@
 package code.java;
 
+import code.java.GLModel.GLModel;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
@@ -51,13 +52,11 @@ public class GLEventListenerImpl implements GLEventListener{
 
         animator = new FPSAnimator(drawable, 30);
         animator.start();
-
         cameraMatrix = new Camera(canvas);
     }
 
     private void initializeModels (GL3 gl) {
         GLModel model;
-
         modelList = new LinkedList<>();
         model =  new GLModel(gl, "triangle.obj");
         model.setModelMatrixRotation(3.14159265359f, 0, 0, 1);
@@ -73,9 +72,14 @@ public class GLEventListenerImpl implements GLEventListener{
         model.setModelMatrixScale(10,10,10);
         modelList.add(model);
 
-        model = new GLCam(gl, 0);
-        model.setModelMatrixOffset(-1f,1f, -15f);
+        model = new GLModel(gl, "bunny_norm.obj");
+        model.setModelMatrixOffset(25f,2f, 0f);
+        model.setModelMatrixScale(10,10,10);
         modelList.add(model);
+
+       /* model = new GLCam(gl, 0);
+        model.setModelMatrixOffset(-1f,1f, -15f);
+        modelList.add(model);*/
     }
 
     @Override

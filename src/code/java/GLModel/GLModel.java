@@ -1,5 +1,7 @@
-package code.java;
+package code.java.GLModel;
 
+import code.java.ObjFile;
+import code.java.Shader;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.math.Matrix4;
 import com.jogamp.opengl.util.GLBuffers;
@@ -45,12 +47,15 @@ public class GLModel {
     protected int[] ibo = new int[1]; //Index  Buffer Object
     protected int[] tbo = new int[1]; //Texture Buffer Object
 
+    GLModel () {
+    }
+
     GLModel(String objFile) {
         String objPath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/" + objFile;
         init(objPath);
     }
 
-    GLModel(GL3 gl, String objFile) {
+    public GLModel(GL3 gl, String objFile) {
         String objPath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/" + objFile;
         init(objPath);
 

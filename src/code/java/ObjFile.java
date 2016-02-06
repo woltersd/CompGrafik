@@ -24,8 +24,8 @@ public class ObjFile {
     private ArrayList<Short> normalIndexData;
     private ArrayList<Short> textureIndexData;
 
-    private static boolean normal = false;
-    private static boolean texture = false;
+    private boolean normal = false;
+    private boolean texture = false;
 
     public ObjFile(String objFilename) throws IOException {
         vertexData = new ArrayList<>();

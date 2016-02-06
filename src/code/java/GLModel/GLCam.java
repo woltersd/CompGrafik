@@ -1,5 +1,6 @@
-package code.java;
+package code.java.GLModel;
 
+import code.java.Shader;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.util.GLBuffers;
 import org.opencv.core.Mat;
