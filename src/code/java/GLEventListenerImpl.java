@@ -3,6 +3,7 @@ package code.java;
 import code.java.GLModel.GLCam;
 import code.java.GLModel.GLModel;
 import code.java.GLModel.GLModelAbstract;
+import code.java.GLModel.GLSkyBoxModel;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
@@ -54,11 +55,15 @@ public class GLEventListenerImpl implements GLEventListener{
     }
 
     private void initializeModels (GL3 gl) {
-        GLModel model;
+        GLModelAbstract model;
         modelList = new LinkedList<>();
         Shader shader;
 
-        shader = new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "texture_FS.glsl");
+        shader = new Shader(gl, "/src/code/glsl/", "skybox_vertex_shader.glsl", "skybox_fragment_shader.glsl");
+        model = new GLSkyBoxModel(gl, shader);
+        modelList.add(model);
+
+       /* shader = new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "texture_FS.glsl");
         shader.setGlobalUniform("light.position", new float[] {20f, 20f, 0f});
         shader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
 
@@ -78,9 +83,9 @@ public class GLEventListenerImpl implements GLEventListener{
         model = new GLModel(gl, "ball.obj", shader);
         model.setModelMatrixOffset(2f, 2f, 0f);
         modelList.add(model);
-        model = new GLCam(gl, 0, shader);
+       /* model = new GLCam(gl, 0, shader);
         model.setModelMatrixOffset(1f, 0.5f, 0f);
-        modelList.add(model);
+        modelList.add(model);*/
     }
 
     @Override
