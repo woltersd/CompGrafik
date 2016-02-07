@@ -1,5 +1,6 @@
 package code.java;
 
+import code.java.GLModel.GLCam;
 import code.java.GLModel.GLModel;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -20,11 +21,9 @@ public class GLEventListenerImpl implements GLEventListener{
 
     private List<GLModel> modelList = null;
 
-    private Shader shader = null;
-
     private float framecounter = 0;
 
-    private Camera cameraMatrix;
+    private Camera camera;
 
     GLCanvas canvas;
 
@@ -47,12 +46,11 @@ public class GLEventListenerImpl implements GLEventListener{
 
         gl.glEnable(GL3.GL_DEPTH_TEST);
 
-        // initialize Shaders
-        shader = new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "texture_FS.glsl");
 
         animator = new FPSAnimator(drawable, 30);
         animator.start();
-        cameraMatrix = new Camera(canvas);
+        camera = new Camera(canvas);
+
     }
 
     private void initializeModels (GL3 gl) {
@@ -60,17 +58,28 @@ public class GLEventListenerImpl implements GLEventListener{
         modelList = new LinkedList<>();
 
         model = new GLModel(gl, "field.obj");
+        model.setShaderUniform("light.position", new float[] {0f, 0f, 10f});
+        model.setShaderUniform("light.intensities", new float[] {1f, 1f, 1f});
         modelList.add(model);
-        model = new GLModel(gl, "field.obj");
+        Shader shader = model.getShader();
+        model = new GLModel(gl, "field.obj", shader);
+        model.setShaderUniform("light.position", new float[] {-8f, 0f, 10f});
+        model.setShaderUniform("light.intensities", new float[] {1f, 1f, 1f});
         model.setModelMatrixOffset(-8f, 0f, 0f);
         modelList.add(model);
-        model = new GLModel(gl, "cylinder.obj");
+        model = new GLModel(gl, "cylinder.obj", shader);
+        model.setShaderUniform("light.position", new float[] {0f, 0f, 10f});
+        model.setShaderUniform("light.intensities", new float[] {1f, 1f, 1f});
         model.setModelMatrixOffset(0f, 0f, 4f);
         modelList.add(model);
-        model = new GLModel(gl, "cylinder.obj");
+        model = new GLModel(gl, "cylinder.obj", shader);
+        model.setShaderUniform("light.position", new float[] {0f, 0f, 10f});
+        model.setShaderUniform("light.intensities", new float[] {1f, 1f, 1f});
         model.setModelMatrixOffset(0f, 0f, -4f);
         modelList.add(model);
-        model = new GLModel(gl, "net.obj");
+        model = new GLModel(gl, "net.obj", shader);
+        model.setShaderUniform("light.position", new float[] {0f, 0f, 10f});
+        model.setShaderUniform("light.intensities", new float[] {1f, 1f, 1f});
         modelList.add(model);
         //model = new GLModel(gl, "ball.obj");
         //model.setModelMatrixScale(0.01f,0.01f,0.01f);
@@ -95,14 +104,16 @@ public class GLEventListenerImpl implements GLEventListener{
         modelList.add(model);
 
         model = new GLModel(gl, "bunny_norm.obj");
-        model.setModelMatrixOffset(25f,2f, 0f);
+        model.setModelMatrixOffset(0f,25f, 0f);
         model.setModelMatrixScale(10,10,10);
         modelList.add(model);
         */
 
-       /* model = new GLCam(gl, 0);
+        model = new GLCam(gl, 0);
         model.setModelMatrixOffset(-1f,1f, -15f);
-        modelList.add(model);*/
+        model.setShaderUniform("light.position", new float[] {0f, 0f, 10f});
+        model.setShaderUniform("light.intensities", new float[] {1f, 1f, 1f});
+        modelList.add(model);
     }
 
     @Override
@@ -113,7 +124,9 @@ public class GLEventListenerImpl implements GLEventListener{
     @Override
     public void dispose(GLAutoDrawable glautodrawable) {
         animator.stop();
-        shader.destroy(glautodrawable.getGL().getGL3());
+        for(GLModel each: modelList){
+            each.dispose(glautodrawable.getGL().getGL3());
+        }
     }
 
     @Override
@@ -124,18 +137,10 @@ public class GLEventListenerImpl implements GLEventListener{
         gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
 
-        shader.bind(gl);
-
-        // set light
-        shader.setUniform(gl, "light.position", new float[] {0f, 0f, 10f}, 3);
-        shader.setUniform(gl, "light.intensities", new float[] {1f, 1f, 1f}, 3);
-        // set camera
-        shader.setUniform(gl, "cameraMatrix", cameraMatrix.getCameraMatrix());
-
         for(GLModel each: modelList){
-            each.display(gl, shader);
+            each.setShaderUniform("cameraMatrix", camera.getCameraMatrix());
+            each.display(gl);
         }
-        shader.unbind(gl);
     }
 
 }

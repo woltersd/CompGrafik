@@ -14,6 +14,7 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.Map;
 
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
@@ -23,54 +24,38 @@ import org.opencv.imgcodecs.Imgcodecs;
  * @author Robert
  * @author peter
  */
-public class GLModel {
-    static{ System.loadLibrary(Core.NATIVE_LIBRARY_NAME); }
+public class GLModel extends GLModelAbstract {
 
-    protected Mat image;
-    protected ByteBuffer textureImage;
+    protected ObjFile objFile;
 
-    private ObjFile objFile;
-
-    protected ArrayList<Point3f> glVertexData;
-    protected ArrayList<Point3f> glNormalData;
-    protected ArrayList<Point2f> glTextureData;
-    protected ArrayList<Short> glIndexData;
-
-    private int vertexCount = 0;
-    private int normalCount = 0;
-    private int textureCount = 0;
-    private int indexCount = 0;
-
-    private Matrix4 modelMatrix;
-
-    protected int[] vbo = new int[1]; //Vertex Buffer Object
-    protected int[] ibo = new int[1]; //Index  Buffer Object
-    protected int[] tbo = new int[1]; //Texture Buffer Object
-
-    GLModel () {
-    }
-
-    GLModel(String objFile) {
-        String objPath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/" + objFile;
-        init(objPath);
+    GLModel() {
+        super();
     }
 
     public GLModel(GL3 gl, String objFile) {
-        String objPath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/" + objFile;
-        init(objPath);
-
-        textureImage = loadTextureImage();
-
-        initializeBuffers(gl);
+        this(gl, objFile, new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "texture_FS.glsl"));
     }
 
-    private void init(String objPath){
-        //TODO better error handling
+    public GLModel(GL3 gl, String objFile, Shader shader) {
+        super();
+        String objPath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/" + objFile;
+        init(objPath);
+        textureImage = loadTextureImage();
+        initializeBuffers(gl);
+
+        setShader(shader);
+        setShaderUniform("modelMatrix", getModelMatrix());
+        setShaderUniform("tex_1", 0);
+    }
+
+    protected void init(String objPath){
         try {
             this.objFile = new ObjFile(objPath);
         } catch (IOException io) {
             System.err.println("IOException " + objPath);
+            return;
         }
+
 
         glVertexData = new ArrayList<>();
         glNormalData = new ArrayList<>();
@@ -79,12 +64,12 @@ public class GLModel {
 
         buildGLData();
 
-        vertexCount = glVertexData.size() * 3;
-        normalCount = glNormalData.size() * 3;
-        textureCount = glTextureData.size() * 2;
-        indexCount = glIndexData.size();
+        setVertexCount(glVertexData.size() * 3);
+        setNormalCount(glNormalData.size() * 3);
+        setTextureCount(glTextureData.size() * 2);
+        setIndexCount(glIndexData.size());
 
-        modelMatrix = new Matrix4();
+        setModelMatrix(new Matrix4());
     }
 
     private void buildGLData(){
@@ -148,18 +133,20 @@ public class GLModel {
         gl.glBindTexture(GL3.GL_TEXTURE_2D, 0);
     }
 
-    public void display(GL3 gl, Shader shader) {
+    @Override
+    public void display(GL3 gl) {
         bindBuffer(gl);
+        getShader().bind(gl);
 
-        // view
-        shader.setUniform(gl, "modelMatrix", getModelMatrix());
-
-        shader.setUniform(gl, "tex_1", 0);
-
+        for (Map.Entry<String, Object> entry : getShaderUniforms().entrySet()) {
+            getShader().setUniform(gl, entry.getKey(), entry.getValue());
+        }
         // draw the triangles
         gl.glDrawElements(GL3.GL_TRIANGLES, getIndexCount(), GL3.GL_UNSIGNED_SHORT, 0);
 
         unbindBuffer(gl);
+        getShader().unbind(gl);
+
     }
 
     public void bindBuffer(GL3 gl) {
@@ -194,23 +181,7 @@ public class GLModel {
         gl.glDisableVertexAttribArray(2);
     }
 
-    public void setModelMatrixOffset(float offsetX, float offsetY, float offsetZ) {
-        modelMatrix.translate(offsetX, offsetY,offsetZ);
-    }
-
-    public void setModelMatrixRotation(float rotationAngle, float vectorX,float vectorY, float vectorZ) {
-        modelMatrix.rotate(rotationAngle, vectorX, vectorY, vectorZ);
-    }
-
-    public void setModelMatrixScale(float xScale, float yScale, float zScale) {
-        modelMatrix.scale(xScale, yScale, zScale);
-    }
-
-    public ByteBuffer getTextureImage() {
-        return textureImage;
-    }
-
-    public ByteBuffer loadTextureImage() {
+    private ByteBuffer loadTextureImage() {
         image = Imgcodecs.imread(System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/" + objFile.getObjName());
 
         if(image.rows() == 0){
@@ -220,53 +191,5 @@ public class GLModel {
         byte[] bytes = new byte[image.rows() * image.cols() * image.channels()];
         image.get(0, 0, bytes);
         return GLBuffers.newDirectByteBuffer(bytes);
-    }
-
-    public ShortBuffer getIndexBuffer() {
-        ShortBuffer indexBuffer = ShortBuffer.allocate(glIndexData.size());
-
-        for (short each : glIndexData) {
-            GLBuffers.puts(indexBuffer, each);
-        }
-        indexBuffer.rewind();
-        return indexBuffer;
-    }
-
-    public FloatBuffer getComboBuffer() {
-        FloatBuffer comboBuffer = FloatBuffer.allocate(getVertexCount() + getNormalCount() + getTextureCount());
-
-        for (int i = 0; i<glVertexData.size(); i++) {
-            GLBuffers.putf(comboBuffer, glVertexData.get(i).x);
-            GLBuffers.putf(comboBuffer, glVertexData.get(i).y);
-            GLBuffers.putf(comboBuffer, glVertexData.get(i).z);
-            GLBuffers.putf(comboBuffer, glNormalData.get(i).x);
-            GLBuffers.putf(comboBuffer, glNormalData.get(i).y);
-            GLBuffers.putf(comboBuffer, glNormalData.get(i).z);
-            GLBuffers.putf(comboBuffer, glTextureData.get(i).x);
-            GLBuffers.putf(comboBuffer, glTextureData.get(i).y);
-        }
-
-        comboBuffer.rewind();
-        return comboBuffer;
-    }
-
-    public int getVertexCount() {
-        return vertexCount;
-    }
-
-    public int getNormalCount(){
-        return normalCount;
-    }
-
-    public int getTextureCount(){
-        return textureCount;
-    }
-
-    public int getIndexCount() {
-        return indexCount;
-    }
-
-    public Matrix4 getModelMatrix() {
-        return modelMatrix;
     }
 }

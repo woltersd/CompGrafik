@@ -16,8 +16,14 @@ public class GLCam extends GLModel {
     VideoCapture camera;
 
     public GLCam(GL3 gl, int cam){
-        super("plane_tex.obj");
+        this(gl, cam, new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "texture_FS.glsl"));
+    }
 
+    public GLCam(GL3 gl, int cam, Shader shader) {
+
+        super();
+        String objPath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/" + "plane_tex.obj";
+        init(objPath);
         camera = new VideoCapture(cam);
         image = new Mat();
         camera.set(3,1280);
@@ -25,6 +31,8 @@ public class GLCam extends GLModel {
 
         getTextureImage();
         initializeBuffers(gl);
+
+        setShader(shader);
     }
 
     public ByteBuffer getTextureImage() {
@@ -34,13 +42,14 @@ public class GLCam extends GLModel {
         return GLBuffers.newDirectByteBuffer(bytes);
     }
 
-    public void display(GL3 gl, Shader shader) {
+    @Override
+    public void display(GL3 gl) {
         // update cam texture
         gl.glBindTexture(GL3.GL_TEXTURE_2D, tbo[0]);
         gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGB, image.cols(), image.rows(), 0, GL3.GL_BGR, GL3.GL_UNSIGNED_BYTE, getTextureImage());
         gl.glBindTexture(GL3.GL_TEXTURE_2D, 0);
 
-        super.display(gl, shader);
+        super.display(gl);
     }
 
 }

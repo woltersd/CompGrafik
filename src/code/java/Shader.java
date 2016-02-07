@@ -202,14 +202,27 @@ public class Shader{
         }
         fragmentShaders.add(iID);
     }
+
+    public void setUniform(GL3 gl, String name, Object object) {
+        if (object instanceof float[]) {
+            setUniform(gl, name,(float[]) object );
+        } else if (object instanceof Integer) {
+            setUniform(gl, name, (int) object);
+        } else if (object instanceof Matrix4) {
+            setUniform(gl, name, (Matrix4) object);
+        } else {
+            System.err.println("Warning: Invalid uniform parameter \"" + name +"\"");
+        }
+
+    }
     //TODO cache uniform location
-    public void setUniform(GL3 gl3, String name, float[] val, int count) {
+    public void setUniform(GL3 gl3, String name, float[] val) {
         int id = gl3.glGetUniformLocation(progId, name);
         if (id == -1) {
             System.err.println("Warning: Invalid uniform parameter \"" + name +"\"");
             return;
         }
-        switch (count) {
+        switch (val.length) {
             case 1:
                 gl3.glUniform1fv(id, 1, val, 0);
                 break;
@@ -225,37 +238,6 @@ public class Shader{
         }
     }
 
-    public void setUniform(GL3 gl, String name, Matrix4 matrix) {
-        int id = gl.glGetUniformLocation(progId, name);
-
-        if (id == -1) {
-            System.err.println("Warning: Invalid uniform parameter " + name);
-            return;
-        }
-        gl.glUniformMatrix4fv(id, 1, false, matrix.getMatrix(), 0);
-    }
-
-    public void setUniform(GL3 gl, String name, float[] matrix) {
-        int id = gl.glGetUniformLocation(progId, name);
-        if (id == -1) {
-            System.err.println("Warning: Invalid uniform parameter " + name);
-            return;
-        } else if (matrix.length != 16) {
-            System.err.println("Warning: Illegal matrix format " + name);
-            return;
-        }
-        switch (matrix.length) {
-            case 9:
-                gl.glUniformMatrix3fv(id,1,false,matrix, 0);
-                break;
-            case 16:
-                gl.glUniformMatrix4fv(id,1,false,matrix, 0);
-                break;
-            default:
-                System.err.println("Warning: Illegal matrix format " + name);
-        }
-}
-
     public void setUniform(GL3 gl, String name, int val) {
         int id = gl.glGetUniformLocation(progId, name);
 
@@ -264,6 +246,16 @@ public class Shader{
             return;
         }
         gl.glUniform1i(id, val);
+    }
+
+    public void setUniform(GL3 gl, String name, Matrix4 matrix) {
+        int id = gl.glGetUniformLocation(progId, name);
+
+        if (id == -1) {
+            System.err.println("Warning: Invalid uniform parameter " + name);
+            return;
+        }
+        gl.glUniformMatrix4fv(id, 1, false, matrix.getMatrix(), 0);
     }
 
     public final void initializeProgram(GL3 gl, boolean cleanUp) {
