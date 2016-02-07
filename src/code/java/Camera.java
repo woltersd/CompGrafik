@@ -18,7 +18,7 @@ public class Camera {
     public Camera(GLCanvas canvas) {
         cameraMatrix = new Matrix4();
         cameraMatrix.makePerspective(-50, 0.66f, 0.1f, 100f);
-        cameraMatrix.translate(0,0,0);
+        cameraMatrix.translate(0f, -1f, -30f);
         //cameraMatrix.rotate(1.57079632679f, -1,0,0);
         KeyListenerImpl keyListener = new KeyListenerImpl();
         canvas.addKeyListener(keyListener);
@@ -40,9 +40,6 @@ public class Camera {
         cameraMatrix.translate(distance*axis[0], distance* axis[1], distance*axis[2]);
     }
 
-  /*  private void rotateCamera(float angle, float x, float y, float z) {
-        cameraMatrix.rotate(angle, x,y,z);
-    }*/
 
     private float[] rotateAxis(float angle, float[] rotationAxis, float[] axis) {
         float cosAngle = (float) Math.cos(angle);
@@ -109,6 +106,13 @@ public class Camera {
                 case 'd':
                     moveCamera(-0.025f, xAxis);
                     break;
+                case 'q':
+                    rotateAroundZAxis(0.025f);
+                    break;
+                case 'e':
+                    rotateAroundZAxis(-0.025f);
+                    break;
+
             }
         }
 
@@ -137,7 +141,7 @@ public class Camera {
 
         @Override
         public void mouseMoved(MouseEvent e) {
-            final float rotationScale = 0.01f;
+           final float rotationScale = 0.01f;
            if (oldX == null) {
                oldX = e.getX();
                oldY = e.getY();
