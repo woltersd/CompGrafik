@@ -16,6 +16,7 @@ import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Map;
 
+
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -32,16 +33,12 @@ public class GLModel extends GLModelAbstract {
         super();
     }
 
-    public GLModel(GL3 gl, String objFile) {
-        this(gl, objFile, new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "texture_FS.glsl"));
-    }
-
     public GLModel(GL3 gl, String objFile, Shader shader) {
         super();
         String objPath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/" + objFile;
         init(objPath);
         textureImage = loadTextureImage();
-        initializeBuffers(gl);
+        initializeBuffers(gl, true);
 
         setShader(shader);
         setShaderUniform("modelMatrix", getModelMatrix());
@@ -111,7 +108,7 @@ public class GLModel extends GLModelAbstract {
         }
     }
 
-    protected void initializeBuffers(GL3 gl) {
+    protected void initializeBuffers(GL3 gl, boolean transparency) {
         // generate Index Buffer Object
         gl.glGenBuffers(1, IntBuffer.wrap(ibo));
         gl.glBindBuffer(GL3.GL_ELEMENT_ARRAY_BUFFER, ibo[0]);
@@ -129,14 +126,14 @@ public class GLModel extends GLModelAbstract {
         gl.glGenTextures(1, IntBuffer.wrap(tbo));
         gl.glBindTexture(GL3.GL_TEXTURE_2D, tbo[0]);
         gl.glTexParameteri(GL3.GL_TEXTURE_2D, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
-        gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGB, image.cols(), image.rows(), 0, GL3.GL_BGR, GL3.GL_UNSIGNED_BYTE, getTextureImage());
+        if(transparency) gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA, image.cols(), image.rows(), 0, GL3.GL_BGRA, GL3.GL_UNSIGNED_BYTE, getTextureImage());
+        else gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA, image.cols(), image.rows(), 0, GL3.GL_BGR, GL3.GL_UNSIGNED_BYTE, getTextureImage());
         gl.glBindTexture(GL3.GL_TEXTURE_2D, 0);
     }
 
     @Override
     public void display(GL3 gl) {
         bindBuffer(gl);
-        getShader().bind(gl);
 
         for (Map.Entry<String, Object> entry : getShaderUniforms().entrySet()) {
             getShader().setUniform(gl, entry.getKey(), entry.getValue());
@@ -145,8 +142,6 @@ public class GLModel extends GLModelAbstract {
         gl.glDrawElements(GL3.GL_TRIANGLES, getIndexCount(), GL3.GL_UNSIGNED_SHORT, 0);
 
         unbindBuffer(gl);
-        getShader().unbind(gl);
-
     }
 
     public void bindBuffer(GL3 gl) {
@@ -182,10 +177,10 @@ public class GLModel extends GLModelAbstract {
     }
 
     private ByteBuffer loadTextureImage() {
-        image = Imgcodecs.imread(System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/" + objFile.getObjName());
+        image = Imgcodecs.imread(System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/" + objFile.getObjName(), Imgcodecs.IMREAD_UNCHANGED);
 
         if(image.rows() == 0){
-            image = Imgcodecs.imread(System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/replacement.png");
+            image = Imgcodecs.imread(System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/replacement.png", Imgcodecs.IMREAD_UNCHANGED);
         }
 
         byte[] bytes = new byte[image.rows() * image.cols() * image.channels()];

@@ -165,7 +165,7 @@ public abstract class GLModelAbstract {
         this.shader = shader;
     }
 
-    public  void setShaderUniform(String name, Object object)  {
+    public void setShaderUniform(String name, Object object)  {
         shaderUniforms.put(name, object);
     }
 

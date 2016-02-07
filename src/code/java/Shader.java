@@ -6,6 +6,8 @@ import com.jogamp.opengl.math.Matrix4;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -14,15 +16,18 @@ import java.util.ArrayList;
  */
 
 //TODO Cleanup
-//TODO Change file path
 public class Shader{
 
-    protected ArrayList<Integer> vertexShaders = new ArrayList<>();
-    protected ArrayList<Integer> fragmentShaders = new ArrayList<>();
-    private int  progId;
+    protected ArrayList<Integer> vertexShaders;
+    protected ArrayList<Integer> fragmentShaders;
+    private Map<String, Object> globalUniforms;
+    private int progId;
 
     public Shader(GL3 gl) {
+        vertexShaders = new ArrayList<>();
+        fragmentShaders = new ArrayList<>();
         progId = 0;
+        globalUniforms = new HashMap<>();
     }
 
     public Shader(GL3 gl, String shadersFilepath, String vertexShader, String fragmentShader) {
@@ -201,6 +206,20 @@ public class Shader{
             System.exit(-1);
         }
         fragmentShaders.add(iID);
+    }
+
+    public void setGlobalUniform(String name, Object object)  {
+        globalUniforms.put(name, object);
+    }
+
+    public Map<String, Object> getGlobalUniforms() {
+        return globalUniforms;
+    }
+
+    public void bindGlobalUniforms(GL3 gl){
+        for (Map.Entry<String, Object> entry : getGlobalUniforms().entrySet()) {
+            setUniform(gl, entry.getKey(), entry.getValue());
+        }
     }
 
     public void setUniform(GL3 gl, String name, Object object) {
