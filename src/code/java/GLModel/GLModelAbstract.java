@@ -60,7 +60,7 @@ public abstract class GLModelAbstract {
 
     }
 
-    abstract void display(GL3 gl);
+    public abstract void display(GL3 gl);
 
     public void dispose(GL3 gl) {
         shader.destroy(gl);
@@ -173,7 +173,7 @@ public abstract class GLModelAbstract {
         return shaderUniforms;
     }
 
- /*   public int[] getVbo() {
+    public int[] getVbo() {
         return vbo;
     }
 
@@ -195,5 +195,5 @@ public abstract class GLModelAbstract {
 
     public void setTbo(int[] tbo) {
         this.tbo = tbo;
-    }*/
+    }
 }

@@ -2,6 +2,7 @@ package code.java;
 
 import code.java.GLModel.GLCam;
 import code.java.GLModel.GLModel;
+import code.java.GLModel.GLModelAbstract;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
@@ -19,8 +20,7 @@ import java.util.List;
 public class GLEventListenerImpl implements GLEventListener{
     private FPSAnimator animator;
 
-    private List<GLModel> modelList;
-    private List<Shader> shaderList;
+    private List<GLModelAbstract> modelList;
 
     private float framecounter = 0;
 
@@ -57,14 +57,10 @@ public class GLEventListenerImpl implements GLEventListener{
         GLModel model;
         modelList = new LinkedList<>();
         Shader shader;
-        shaderList = new LinkedList<>();
-
 
         shader = new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "texture_FS.glsl");
         shader.setGlobalUniform("light.position", new float[] {20f, 20f, 0f});
         shader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
-        shaderList.add(shader);
-
 
         model = new GLModel(gl, "field.obj", shader);
         modelList.add(model);
@@ -95,7 +91,7 @@ public class GLEventListenerImpl implements GLEventListener{
     @Override
     public void dispose(GLAutoDrawable glautodrawable) {
         animator.stop();
-        for(GLModel each: modelList){
+        for(GLModelAbstract each: modelList){
             each.dispose(glautodrawable.getGL().getGL3());
         }
     }
@@ -111,16 +107,11 @@ public class GLEventListenerImpl implements GLEventListener{
         gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
 
-        for(Shader each: shaderList){
-            each.bind(gl);
-            each.setGlobalUniform("cameraMatrix", camera.getCameraMatrix());
-            each.bindGlobalUniforms(gl);
-        }
-        for(GLModel each: modelList){
+        for(GLModelAbstract each: modelList){
+            each.getShader().bind(gl);
+            each.getShader().setGlobalUniform("cameraMatrix", camera.getCameraMatrix());
             each.display(gl);
-        }
-        for(Shader each: shaderList){
-            each.unbind(gl);
+            each.getShader().unbind(gl);
         }
     }
 

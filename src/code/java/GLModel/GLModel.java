@@ -53,7 +53,6 @@ public class GLModel extends GLModelAbstract {
             return;
         }
 
-
         glVertexData = new ArrayList<>();
         glNormalData = new ArrayList<>();
         glTextureData = new ArrayList<>();
@@ -160,7 +159,7 @@ public class GLModel extends GLModelAbstract {
         gl.glEnableVertexAttribArray(1);
         gl.glVertexAttribPointer(1, 3, GL3.GL_FLOAT, false, 32, 12);
         gl.glEnableVertexAttribArray(2);
-        gl.glVertexAttribPointer(2, 3, GL3.GL_FLOAT, false, 32, 24);
+        gl.glVertexAttribPointer(2, 2, GL3.GL_FLOAT, false, 32, 24);
     }
 
     public void unbindBuffer(GL3 gl) {

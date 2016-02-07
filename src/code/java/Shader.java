@@ -68,6 +68,7 @@ public class Shader{
 
     public void bind(GL3 gl) {
         gl.glUseProgram(progId);
+        bindGlobalUniforms(gl);
     }
 
     public void unbind(GL3 gl) {
