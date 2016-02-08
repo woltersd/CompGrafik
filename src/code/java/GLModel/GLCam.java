@@ -13,7 +13,7 @@ import java.nio.IntBuffer;
 /**
  * @author Robert
  */
-public class GLCam extends GLModel {
+public class GLCam extends GLModel implements GLObject{
 
     VideoCapture camera;
     BackgroundSubtractor subtractor = new BackgroundSubtractor();

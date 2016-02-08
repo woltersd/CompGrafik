@@ -25,7 +25,7 @@ import org.opencv.imgcodecs.Imgcodecs;
  * @author Robert
  * @author peter
  */
-public class GLModel extends GLModelAbstract {
+public class GLModel extends GLModelAbstract implements GLObject{
 
     protected ObjFile objFile;
 

@@ -5,7 +5,7 @@ uniform sampler2D tex_1;
 
 uniform struct Light {
    vec3 position;
-   vec3 intensities; //a.k.a the color of the light
+   vec3 intensities; //color of the light
 } light;
 
 in vec3 fragNormal;

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public abstract class GLModelAbstract {
+public abstract class GLModelAbstract implements GLObject {
     static{ System.loadLibrary(Core.NATIVE_LIBRARY_NAME); }
 
     protected Mat image;
