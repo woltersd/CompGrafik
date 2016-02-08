@@ -3,6 +3,7 @@ package code.java;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.math.Matrix4;
 
+import javax.vecmath.Vector3f;
 import java.awt.event.*;
 
 /**
@@ -10,71 +11,77 @@ import java.awt.event.*;
  * */
 public class Camera {
     private Matrix4 cameraMatrix;
-    private float[] xAxis;
-    private float[] yAxis;
-    private float[] zAxis;
+    private Vector3f xAxis;
+    private Vector3f yAxis;
+    private Vector3f zAxis;
+    private GLCanvas canvas;
+    private Vector3f curPosition;
 
 
     public Camera(GLCanvas canvas) {
+
+        this.canvas = canvas;
+        xAxis = new Vector3f(1,0,0);
+        yAxis = new Vector3f(0,1,0);
+        zAxis = new Vector3f(0,0,1);
+
+        curPosition = new Vector3f(0,4,-60);
+
         cameraMatrix = new Matrix4();
-        cameraMatrix.makePerspective(-50, 0.66f, 0.1f, 100f);
-        cameraMatrix.translate(0f, -1f, -30f);
-        //cameraMatrix.rotate(1.57079632679f, -1,0,0);
+
+        cameraMatrix.makePerspective(50, (float) canvas.getWidth() / (float) canvas.getHeight(), 0.1f, 100f);
+        cameraMatrix.translate(curPosition.x, curPosition.y, curPosition.z);
+
         KeyListenerImpl keyListener = new KeyListenerImpl();
         canvas.addKeyListener(keyListener);
         MouseMotionListenerImpl mouseMotionListener = new MouseMotionListenerImpl();
         canvas.addMouseMotionListener(mouseMotionListener);
-        xAxis = new float[3];
-        xAxis[0] = 1f;
-        yAxis = new float[3];
-        yAxis[1] = 1f;
-        zAxis = new float[3];
-        zAxis[2] = 1f;
+
     }
 
     public Matrix4 getCameraMatrix() {
         return cameraMatrix;
     }
 
-    private void moveCamera(float distance, float[] axis) {
-        cameraMatrix.translate(distance*axis[0], distance* axis[1], distance*axis[2]);
+    private void moveCamera(float distance, Vector3f axis) {
+        Vector3f changeVector = new Vector3f(distance*axis.x, distance* axis.y, distance*axis.z);
+        cameraMatrix.translate(changeVector.x, changeVector.y, changeVector.z);
+        curPosition.add(changeVector);
     }
 
-
-    private float[] rotateAxis(float angle, float[] rotationAxis, float[] axis) {
+    private Vector3f rotateAxis(float angle, Vector3f rotationAxis, Vector3f axis) {
         float cosAngle = (float) Math.cos(angle);
         float sinAngle = (float) Math.sin(angle);
-        float[] newAxis = new float[3];
-        newAxis[0] = (rotationAxis[0] *rotationAxis[0] * (1 - cosAngle) + cosAngle) * axis[0] +
-                (rotationAxis[0] * rotationAxis[1] * (1 - cosAngle) - rotationAxis[2] * sinAngle) * axis[1] +
-                (rotationAxis[0] * rotationAxis[2] * (1 - cosAngle) + rotationAxis[1] * sinAngle) * axis[2];
+        Vector3f newAxis = new Vector3f();
+        newAxis.x = (rotationAxis.x *rotationAxis.x * (1 - cosAngle) + cosAngle) * axis.x +
+                (rotationAxis.x * rotationAxis.y * (1 - cosAngle) - rotationAxis.z * sinAngle) * axis.y +
+                (rotationAxis.x * rotationAxis.z * (1 - cosAngle) + rotationAxis.y * sinAngle) * axis.z;
 
-        newAxis[1] = (rotationAxis[0] * rotationAxis[1] * (1 - cosAngle) + rotationAxis[2] * sinAngle) * axis[0] +
-                (rotationAxis[1] * rotationAxis[1] * (1 - cosAngle) + cosAngle) * axis[1] +
-                (rotationAxis[1] * rotationAxis[2] * (1 - cosAngle) - rotationAxis[0] * sinAngle) * axis[2];
+        newAxis.y = (rotationAxis.x * rotationAxis.y * (1 - cosAngle) + rotationAxis.z * sinAngle) * axis.x +
+                (rotationAxis.y * rotationAxis.y * (1 - cosAngle) + cosAngle) * axis.y +
+                (rotationAxis.y * rotationAxis.z * (1 - cosAngle) - rotationAxis.x * sinAngle) * axis.z;
 
-        newAxis[2] = (rotationAxis[0] * rotationAxis[2] * (1 - cosAngle) - rotationAxis[1] * sinAngle) * axis[0] +
-                (rotationAxis[1] * rotationAxis[2] * (1 - cosAngle) + rotationAxis[0] * sinAngle) * axis[1] +
-                (rotationAxis[2] * rotationAxis[2] * (1 - cosAngle) + cosAngle) * axis[2];
+        newAxis.z = (rotationAxis.x * rotationAxis.z * (1 - cosAngle) - rotationAxis.y * sinAngle) * axis.x +
+                (rotationAxis.y * rotationAxis.z * (1 - cosAngle) + rotationAxis.x * sinAngle) * axis.y +
+                (rotationAxis.z * rotationAxis.z * (1 - cosAngle) + cosAngle) * axis.z;
 
         return newAxis;
-
     }
 
     private void rotateAroundXAxis(float angle) {
-        cameraMatrix.rotate(angle, xAxis[0], xAxis[1], xAxis[2]);
+        cameraMatrix.rotate(angle, xAxis.x, xAxis.y, xAxis.z);
         yAxis = rotateAxis(-angle,xAxis, yAxis);
         zAxis = rotateAxis(-angle, xAxis, zAxis);
     }
 
     private void rotateAroundYAxis(float angle) {
-        cameraMatrix.rotate(angle, yAxis[0], yAxis[1], yAxis[2]);
+        cameraMatrix.rotate(angle, yAxis.x, yAxis.y, yAxis.z);
         xAxis = rotateAxis(-angle, yAxis, xAxis);
         zAxis = rotateAxis(-angle, yAxis, zAxis);
     }
 
     private void rotateAroundZAxis(float angle) {
-        cameraMatrix.rotate(angle, zAxis[0], zAxis[1], zAxis[2]);
+        cameraMatrix.rotate(angle, zAxis.x, zAxis.y, zAxis.z);
         xAxis = rotateAxis(-angle, zAxis, xAxis);
         yAxis = rotateAxis(-angle, zAxis, yAxis);
     }
@@ -89,6 +96,42 @@ public class Camera {
     }
 
 
+    private Vector3f getCrossProduct(Vector3f v1, Vector3f v2) {
+        Vector3f crossProduct = new Vector3f();
+        crossProduct.x = v1.y * v2.z - v1.z * v2.y;
+        crossProduct.y = v1.z * v2.x - v1.x * v2.z;
+        crossProduct.z = v1.x * v2.y - v1.y * v2.x;
+        return crossProduct;
+    }
+
+    public void reshapeCalled() {
+        cameraMatrix = new Matrix4();
+
+        cameraMatrix.makePerspective(50, (float) canvas.getWidth() / (float) canvas.getHeight(), 0.1f, 100f);
+        cameraMatrix.translate(curPosition.x, curPosition.y, curPosition.z);
+        xAxis.set(1,0,0);
+        yAxis.set(0,1,0);
+        zAxis.set(0,0,1);
+
+   /*     Vector3f crossProduct = new Vector3f();
+        Vector3f axis = new Vector3f(1,0,0);
+        crossProduct.cross(axis, xAxis);
+        float angle = axis.angle(xAxis);
+        Vector3f result = rotateAxis(angle, crossProduct, axis);
+        Vector3f test = new Vector3f();
+       test.cross(xAxis, axis);
+        angle = xAxis.angle(axis);
+        test = rotateAxis(angle, test, axis);
+        axis.set(0,1,0);
+     /*   test.sub(result,xAxis);
+        if (test.length() > 0.1) {
+            angle *= -1;
+        }
+        yAxis = rotateAxis(angle, crossProduct, yAxis);
+        zAxis = rotateAxis(angle, crossProduct, zAxis);
+        crossProduct.cross(axis, yAxis);
+        angle = axis.angle(yAxis);*/
+    }
 
     private class KeyListenerImpl implements KeyListener {
         @Override
@@ -101,10 +144,10 @@ public class Camera {
                     moveCamera(-0.25f, zAxis);
                     break;
                 case 'a':
-                    moveCamera(0.025f, xAxis);
+                    moveCamera(-0.025f, xAxis);
                     break;
                 case 'd':
-                    moveCamera(-0.025f, xAxis);
+                    moveCamera(0.025f, xAxis);
                     break;
                 case 'q':
                     rotateAroundZAxis(0.025f);
@@ -112,7 +155,6 @@ public class Camera {
                 case 'e':
                     rotateAroundZAxis(-0.025f);
                     break;
-
             }
         }
 
@@ -141,7 +183,7 @@ public class Camera {
 
         @Override
         public void mouseMoved(MouseEvent e) {
-           final float rotationScale = 0.01f;
+           final float rotationScale = 0.004f;
            if (oldX == null) {
                oldX = e.getX();
                oldY = e.getY();
