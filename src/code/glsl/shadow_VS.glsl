@@ -16,13 +16,8 @@ void main()
 {
    texC = texture;
 
-   //float t = -(light.position.y/(position.y - light.position.y));
-   //gl_Position = cameraMatrix * modelMatrix * vec4(vec3(light.position.x + (t * (position.x - light.position.x)) , 0.0f, light.position.z + (t * (position.z - light.position.z))), 1.0f);
+   vec3 posGlobal = vec3(modelMatrix * vec4(position,1));
 
-   mat4 shadow = mat4(light.position.y, -light.position.x, 0.0f, 0.0f,
-                      0.0f, 0.0f, 0.0f, 0.0f,
-                      0.0f, -light.position.z, light.position.y, 0.0f,
-                      0.0f, -1.0f, 0.0f, light.position.y);
-
-   gl_Position = cameraMatrix * modelMatrix * shadow * vec4(vec3(position), 1.0f);
+   float t = -(light.position.y/(posGlobal.y - light.position.y));
+   gl_Position = cameraMatrix * vec4(vec3(light.position.x + (t * (posGlobal.x - light.position.x)) , 0.035f, light.position.z + (t * (posGlobal.z - light.position.z))), 1f);
 }
