@@ -10,6 +10,7 @@ import org.opencv.core.Mat;
 
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Point4f;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -39,7 +40,6 @@ public abstract class GLModelAbstract implements GLObject {
 
     private Matrix4 modelMatrix;
 
-
     protected int[] vbo; //Vertex Buffer Object
     protected int[] ibo; //Index  Buffer Object
     protected int[] tbo; //Texture Buffer Object
@@ -57,7 +57,6 @@ public abstract class GLModelAbstract implements GLObject {
         vbo = new int[1]; //Vertex Buffer Object
         ibo = new int[1]; //Index  Buffer Object
         tbo = new int[1]; //Texture Buffer Object
-
     }
 
     public abstract void display(GL3 gl);
@@ -76,6 +75,10 @@ public abstract class GLModelAbstract implements GLObject {
 
     public void setModelMatrixScale(float xScale, float yScale, float zScale) {
         modelMatrix.scale(xScale, yScale, zScale);
+    }
+
+    public Matrix4 getModelMatrix() {
+        return modelMatrix;
     }
 
     public ByteBuffer getTextureImage() {
@@ -147,10 +150,6 @@ public abstract class GLModelAbstract implements GLObject {
 
     public void setIndexCount(int indexCount) {
         this.indexCount = indexCount;
-    }
-
-    public Matrix4 getModelMatrix() {
-        return modelMatrix;
     }
 
     public void setModelMatrix(Matrix4 modelMatrix) {

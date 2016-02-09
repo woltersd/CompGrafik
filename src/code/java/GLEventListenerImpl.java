@@ -54,48 +54,63 @@ public class GLEventListenerImpl implements GLEventListener{
     private void initializeModels (GL3 gl) {
         GLModel model;
         GLShadow shadow;
+        BackgroundSubtractor subtractor;
         modelList = new LinkedList<>();
         Shader shader = new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "texture_FS.glsl");
         shader.setGlobalUniform("light.position", new float[] {20f, 20f, 0f});
         shader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
 
         Shader shadowShader = new Shader(gl, "/src/code/glsl/","shadow_VS.glsl", "shadow_FS.glsl");
-        /*
+        shadowShader.setGlobalUniform("light.position", new float[] {20f, 20f, 0f});
+        shadowShader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
+        Shader camShader = new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "subtractor_FS.glsl");
+        camShader.setGlobalUniform("light.position", new float[] {20f, 20f, 0f});
+        camShader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
+
         model = new GLModel(gl, "field.obj", shader);
         modelList.add(model);
         model = new GLModel(gl, "field.obj", shader);
         model.setModelMatrixOffset(-8f, 0f, 0f);
         modelList.add(model);
-        */
+
         model = new GLModel(gl, "cylinder.obj", shader);
         model.setModelMatrixOffset(0f, 0f, 4f);
         modelList.add(model);
-        shadow = new GLShadow(gl, model, shadowShader);
-        modelList.add(shadow);
+        //shadow = new GLShadow(gl, model, shadowShader);
+        //modelList.add(shadow);
 
         model = new GLModel(gl, "cylinder.obj", shader);
         model.setModelMatrixOffset(0f, 0f, -4f);
         modelList.add(model);
-        shadow = new GLShadow(gl, model, shadowShader);
-        modelList.add(shadow);
+        //shadow = new GLShadow(gl, model, shadowShader);
+        //modelList.add(shadow);
 
         model = new GLModel(gl, "net.obj", shader);
         modelList.add(model);
-        shadow = new GLShadow(gl, model, shadowShader);
-        modelList.add(shadow);
+        //shadow = new GLShadow(gl, model, shadowShader);
+        //modelList.add(shadow);
 
         model = new GLModel(gl, "ball.obj", shader);
         model.setModelMatrixOffset(2f, 2f, 0f);
         modelList.add(model);
-        shadow = new GLShadow(gl, model, shadowShader);
-        modelList.add(shadow);
-        /*
-        model = new GLCam(gl, 0, shader);
-        model.setModelMatrixOffset(1f, 0.5f, 0f);
+        //shadow = new GLShadow(gl, model, shadowShader);
+        //modelList.add(shadow);
+
+        subtractor = new BackgroundSubtractor(gl, 0, canvas);
+        modelList.add(subtractor);
+
+        model = new GLCam(gl, subtractor, "player1.obj", camShader, -4f);
+        model.setModelMatrixOffset(-4f, 0.0f, 0.0f);
         modelList.add(model);
-        shadow = new GLShadow(gl, model, shadowShader);
-        modelList.add(shadow);
-        */
+        //shadow = new GLShadow(gl, model, shadowShader);
+        //modelList.add(shadow);
+
+        model = new GLCam(gl, subtractor, "player2.obj", camShader, 4);
+        model.setModelMatrixOffset(4f, 0.0f, 0.0f);
+        modelList.add(model);
+        //shadow = new GLShadow(gl, model, shadowShader);
+        //modelList.add(shadow)
+
     }
 
     @Override

@@ -23,6 +23,10 @@ public class Shader{
     private Map<String, Object> globalUniforms;
     private int progId;
 
+    public Shader(){
+        progId = -1;
+    }
+
     public Shader(GL3 gl) {
         vertexShaders = new ArrayList<>();
         fragmentShaders = new ArrayList<>();
@@ -67,8 +71,10 @@ public class Shader{
     }
 
     public void bind(GL3 gl) {
-        gl.glUseProgram(progId);
-        bindGlobalUniforms(gl);
+        if(progId != -1) {
+            gl.glUseProgram(progId);
+            bindGlobalUniforms(gl);
+        }
     }
 
     public void unbind(GL3 gl) {
@@ -210,7 +216,7 @@ public class Shader{
     }
 
     public void setGlobalUniform(String name, Object object)  {
-        globalUniforms.put(name, object);
+        if(progId != -1) globalUniforms.put(name, object);
     }
 
     public Map<String, Object> getGlobalUniforms() {
