@@ -7,6 +7,7 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 
+import javax.vecmath.Vector3f;
 import java.nio.IntBuffer;
 import java.util.LinkedList;
 import java.util.List;
@@ -19,6 +20,7 @@ public class GLEventListenerImpl implements GLEventListener{
     private FPSAnimator animator;
 
     private List<GLObject> modelList;
+    private List<CameraMovingAction> cameraMovingActionList;
 
     private float framecounter = 0;
 
@@ -48,7 +50,7 @@ public class GLEventListenerImpl implements GLEventListener{
         animator = new FPSAnimator(drawable, 30);
         animator.start();
         camera = new Camera(canvas);
-
+        addCameraMotionAction();
     }
 
     private void initializeModels (GL3 gl) {
@@ -90,7 +92,7 @@ public class GLEventListenerImpl implements GLEventListener{
         //shadow = new GLShadow(gl, model, shadowShader);
         //modelList.add(shadow);
 
-        model = new GLModel(gl, "ball.obj", shader);
+    /*    model = new GLModel(gl, "ball.obj", shader);
         model.setModelMatrixOffset(2f, 2f, 0f);
         modelList.add(model);
         //shadow = new GLShadow(gl, model, shadowShader);
@@ -111,11 +113,29 @@ public class GLEventListenerImpl implements GLEventListener{
         //shadow = new GLShadow(gl, model, shadowShader);
         //modelList.add(shadow)
 
+        shadow = new GLShadow(gl, model, shadowShader);
+        modelList.add(shadow);
+        */
+
+
+    }
+
+    public void addCameraMotionAction() {
+        cameraMovingActionList = new LinkedList<>();
+        CameraMovingAction cameraMovingAction = new CameraMovingAction(camera);
+       // cameraMovingAction.addWayPoint(30, new Vector3f(0,6,-10), new Vector3f(0,0,1), 0);
+        cameraMovingAction.addWayPoint(120, new Vector3f(0,4,-60), new Vector3f(0,1,0),0);
+        //cameraMovingAction.addWayPoint(120, new Vector3f(0,6,-10), new Vector3f(0,1,0),0f);
+       // cameraMovingAction.addWayPoint(60, new Vector3f(-5,6,-30));
+       // cameraMovingAction.addWayPoint(30, new Vector3f(-5,6,-30));
+       // cameraMovingAction.addWayPoint(300, new Vector3f(5,4,-40));
+        cameraMovingAction.setupMovingAction();
+        cameraMovingActionList.add(cameraMovingAction);
     }
 
     @Override
     public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height) {
-        //TODO fill me
+        camera.reshapeCalled();
     }
 
     @Override
@@ -128,7 +148,13 @@ public class GLEventListenerImpl implements GLEventListener{
 
     @Override
     public void display(GLAutoDrawable drawable) {
-        framecounter += 0.001f;
+        /*if (cameraMovingActionList.size() > 0) {
+            if (cameraMovingActionList.get(0).isMovingActionActive()) {
+                cameraMovingActionList.get(0).doStep();
+            } else {
+                cameraMovingActionList.remove(0);
+            }
+        }*/
         GL3 gl = drawable.getGL().getGL3();
 
         gl.glEnable(GL3.GL_BLEND);
