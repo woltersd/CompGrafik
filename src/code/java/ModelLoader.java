@@ -26,9 +26,14 @@ public class ModelLoader {
         Shader shadowShader = new Shader(gl, "/src/code/glsl/","shadow_VS.glsl", "shadow_FS.glsl");
         shadowShader.setGlobalUniform("light.position", new float[] {20f, 20f, 20f});
         shadowShader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
+
         Shader camShader = new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "subtractor_FS.glsl");
         camShader.setGlobalUniform("light.position", new float[] {20f, 20f, 0f});
         camShader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
+
+        Shader camShadowShader = new Shader(gl, "/src/code/glsl/","shadow_VS.glsl", "camShadow_FS.glsl");
+        camShadowShader.setGlobalUniform("light.position", new float[] {20f, 20f, 20f});
+        camShadowShader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
 
         Shader skyShader = new Shader(gl, "/src/code/glsl/","sky_VS.glsl", "sky_FS.glsl");
         model = new GLModel(gl, "sky.obj", skyShader);
@@ -73,8 +78,8 @@ public class ModelLoader {
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
         modelList.add(shadow);
-        
-        /*
+
+
         subtractor = new BackgroundSubtractor(gl, 0, canvas);
         modelList.add(subtractor);
 
@@ -83,17 +88,17 @@ public class ModelLoader {
         model.setModelMatrixOffset(-4f, 0.0f, 0.0f);
         modelList.add(model);
         ball.addCollision(sphereCollision);
-        //shadow = new GLShadow(gl, model, shadowShader);
-        //modelList.add(shadow);
+        shadow = new GLShadow(gl, model, camShadowShader);
+        modelList.add(shadow);
 
         sphereCollision = new GLSphereCollision(new Point3f(4f, 0.0f, 0.0f), 1);
         model = new GLCam(gl, subtractor, "player2.obj", camShader, 4, sphereCollision);
         model.setModelMatrixOffset(4f, 0.0f, 0.0f);
         modelList.add(model);
         ball.addCollision(sphereCollision);
-        //shadow = new GLShadow(gl, model, shadowShader);
-        //modelList.add(shadow);
-        */
+        shadow = new GLShadow(gl, model, camShadowShader);
+        modelList.add(shadow);
+
 
         modelList.addAll(loadPalmTrees(gl, shader, shadowShader));
         modelList.addAll(loadGrass(gl, shader, shadowShader));
