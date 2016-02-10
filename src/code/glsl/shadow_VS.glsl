@@ -18,6 +18,8 @@ void main()
 
    vec3 posGlobal = vec3(modelMatrix * vec4(position,1));
 
-   float t = -(light.position.y/(posGlobal.y - light.position.y));
-   gl_Position = cameraMatrix * vec4(vec3(light.position.x + (t * (posGlobal.x - light.position.x)) , 0.035f, light.position.z + (t * (posGlobal.z - light.position.z))), 1f);
+   float t = -(light.position.y / (posGlobal.y - light.position.y));
+   vec3 shadowPos = vec3(light.position.x + (t * (posGlobal.x - light.position.x)) , 0.035f, light.position.z + (t * (posGlobal.z - light.position.z)));
+   gl_Position = cameraMatrix * vec4(shadowPos, 1.0f);
+
 }

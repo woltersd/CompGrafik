@@ -9,7 +9,7 @@ uniform mat4 cameraMatrix;
 void main()
 {
     // temp
-    mat4 test = projection * cameraMatrix;
+   // mat4 test = projection * cameraMatrix;
     gl_Position =   /*projection */ cameraMatrix   * vec4(position, 1.0);
     texCoords = position;
 }

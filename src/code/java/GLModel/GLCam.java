@@ -21,7 +21,9 @@ public class GLCam extends GLModel implements GLObject{
     private VideoCapture camera;
     private BackgroundSubtractor subtractor;
     private Point3f initOffset;
+    private Point2f playerOffset;
     private short player;
+    private GLSphereCollision sphereCollision;
 
     public GLCam(GL3 gl, int cam, String objFile, Shader shader) {
         super();
@@ -40,7 +42,7 @@ public class GLCam extends GLModel implements GLObject{
         setShaderUniform("tex_1", 0);
     }
 
-    public GLCam(GL3 gl, BackgroundSubtractor subtractor, String objFile, Shader shader, float offset){
+    public GLCam(GL3 gl, BackgroundSubtractor subtractor, String objFile, Shader shader, float offset, GLSphereCollision sphereCollision){
         super();
         this.subtractor = subtractor;
         setTbo(subtractor.getTbo());
@@ -56,6 +58,8 @@ public class GLCam extends GLModel implements GLObject{
         initializeBuffers(gl);
 
         initOffset = new Point3f(offset, 0, 0);
+        playerOffset = new Point2f(0, 0);
+        this.sphereCollision = sphereCollision;
 
         setShader(shader);
         setShaderUniform("modelMatrix", getModelMatrix());
@@ -92,10 +96,11 @@ public class GLCam extends GLModel implements GLObject{
             gl.glTexImage2D(GL3.GL_TEXTURE_2D, 0, GL3.GL_RGBA, image.cols(), image.rows(), 0, GL3.GL_BGR, GL3.GL_UNSIGNED_BYTE, getTextureImage());
             gl.glBindTexture(GL3.GL_TEXTURE_2D, 0);
         } else{
-            Point2f playerOffset = subtractor.getPlayerOffset(player);
-
+            playerOffset = subtractor.getPlayerOffset(player);
+            Point3f position = new Point3f(initOffset.x + (playerOffset.x), initOffset.y ,initOffset.z);
+            sphereCollision.setPos(position);
             getModelMatrix().loadIdentity();
-            getModelMatrix().translate(initOffset.x + (playerOffset.x), initOffset.y ,initOffset.z);
+            getModelMatrix().translate(position.x, position.y, position.z);
             //setShaderUniform("modelMatrix", getModelMatrix());
 
             // texture image buffer
@@ -103,6 +108,10 @@ public class GLCam extends GLModel implements GLObject{
             gl.glBindTexture(GL3.GL_TEXTURE_2D, tbo[1]);
         }
         super.display(gl);
+    }
+
+    public Point3f getPosition(){
+        return new Point3f(initOffset.x + playerOffset.x, initOffset.y + playerOffset.y, initOffset.z);
     }
 
 }

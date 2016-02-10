@@ -157,11 +157,13 @@ public class BackgroundSubtractor implements GLObject, KeyListener {
 
         if(player == 1){
             x = player1.x / (low.cols()/4f) * 4;
-            return new Point2f(x, player1.y);
+            y = player1.y / (low.rows()/2f) * 2;
+            return new Point2f(x, y);
         }
         else {
             x = player2.x / (low.cols()/4f) * 4;
-            return new Point2f(x, player2.y);
+            y = player1.y / (low.rows()/2f) * 2;
+            return new Point2f(x, y);
         }
     }
 
