@@ -17,8 +17,9 @@ public class GLBall extends GLModel implements GLObject {
     Point3f pos;
     Vector3f velocity;
     boolean gravityForce;
-    final float secondsPerFrame = 1 / 30f;
-    final float airDrag = 0.00005f;
+    final float framesPerSecond = 30f;
+    final float secondsPerFrame = 1 / framesPerSecond;
+    final float airDragPerFrame = 0.001f / framesPerSecond;
     final float gravity = 0.0981f;
     final float abatement = 0.75f;
 
@@ -29,7 +30,8 @@ public class GLBall extends GLModel implements GLObject {
         super(gl, objFile, shader);
         this.radius = radius;
         this.pos = pos;
-        velocity = new Vector3f(-0.1f,-0.05f,0);
+        this.pos.x += 2.2;
+        velocity = new Vector3f(0.4f,0f,0);
         gravityForce = true;
         collisions = new LinkedList<>();
     }
@@ -55,12 +57,12 @@ public class GLBall extends GLModel implements GLObject {
 
         if (velocity.x != 0) {
             if (velocity.x > 0 ) {
-                velocity.x += -airDrag;
+                velocity.x += -airDragPerFrame;
                 if (velocity.x < 0) {
                     velocity.x = 0;
                 }
             } else {
-                velocity.x += airDrag;
+                velocity.x += airDragPerFrame;
                 if (velocity.x > 0) {
                     velocity.x = 0;
                 }
@@ -68,12 +70,12 @@ public class GLBall extends GLModel implements GLObject {
         }
         if (velocity.z != 0) {
             if (velocity.z > 0 ) {
-                velocity.z += -airDrag;
+                velocity.z += -airDragPerFrame;
                 if (velocity.z < 0) {
                     velocity.z = 0;
                 }
             } else {
-                velocity.z += airDrag;
+                velocity.z += airDragPerFrame;
                 if (velocity.z > 0) {
                     velocity.z = 0;
                 }
@@ -88,6 +90,7 @@ public class GLBall extends GLModel implements GLObject {
                 if (!(velocity.y > 0.001f) && !(velocity.y < -0.001f)) {
                     gravityForce = false;
                     velocity.y = 0;
+                    pos.y = 0;
                 }
                 break;
             }
