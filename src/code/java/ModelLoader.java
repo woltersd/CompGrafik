@@ -18,22 +18,25 @@ public class ModelLoader {
         BackgroundSubtractor subtractor;
         modelList = new LinkedList<>();
 
+        float lightPos[] = new float[]{100f, 50f, -10f};
+        float lightColor[] = new float[]{1f, 0.6f, 0.75f};
+
 
         Shader shader = new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "texture_FS.glsl");
-        shader.setGlobalUniform("light.position", new float[] {20f, 20f, 0f});
-        shader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
+        shader.setGlobalUniform("light.position", lightPos);
+        shader.setGlobalUniform("light.intensities", lightColor);
 
         Shader shadowShader = new Shader(gl, "/src/code/glsl/","shadow_VS.glsl", "shadow_FS.glsl");
-        shadowShader.setGlobalUniform("light.position", new float[] {20f, 20f, 20f});
-        shadowShader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
+        shadowShader.setGlobalUniform("light.position", lightPos);
+        shadowShader.setGlobalUniform("light.intensities", new float[]{1f, 1f, 1f});
 
         Shader camShader = new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "subtractor_FS.glsl");
-        camShader.setGlobalUniform("light.position", new float[] {20f, 20f, 0f});
-        camShader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
+        camShader.setGlobalUniform("light.position", lightPos);
+        camShader.setGlobalUniform("light.intensities", lightColor);
 
         Shader camShadowShader = new Shader(gl, "/src/code/glsl/","shadow_VS.glsl", "camShadow_FS.glsl");
-        camShadowShader.setGlobalUniform("light.position", new float[] {20f, 20f, 20f});
-        camShadowShader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
+        camShadowShader.setGlobalUniform("light.position", lightPos);
+        camShadowShader.setGlobalUniform("light.intensities", new float[]{1f, 1f, 1f});
 
         Shader skyShader = new Shader(gl, "/src/code/glsl/","sky_VS.glsl", "sky_FS.glsl");
         model = new GLModel(gl, "sky.obj", skyShader);
@@ -48,8 +51,8 @@ public class ModelLoader {
 
         model = new GLModel(gl, "outline.obj", new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "color_FS.glsl"));
         model.setModelMatrixOffset(0,0.01f,0);
-        model.setShaderUniform("light.position", new float[] {20f, 20f, 0f});
-        model.setShaderUniform("light.intensities", new float[] {1f, 1f, 1f});
+        model.setShaderUniform("light.position", lightPos);
+        model.setShaderUniform("light.intensities", lightColor);
         modelList.add(model);
 
         model = new GLModel(gl, "ground.obj", shader);
@@ -85,10 +88,10 @@ public class ModelLoader {
         modelList.add(shadow);
 
 
-       // subtractor = new BackgroundSubtractor(gl, 0, canvas);
-       // modelList.add(subtractor);
+        subtractor = new BackgroundSubtractor(gl, 0, canvas);
+        modelList.add(subtractor);
 
-     /*   GLSphereCollision sphereCollision = new GLSphereCollision(new Point3f(-4f, 0.0f, 0.0f), 1);
+        GLSphereCollision sphereCollision = new GLSphereCollision(new Point3f(-4f, 0.0f, 0.0f), 1);
         model = new GLCam(gl, subtractor, "player1.obj", camShader, -4f, sphereCollision);
         model.setModelMatrixOffset(-4f, 0.0f, 0.0f);
         modelList.add(model);
@@ -102,7 +105,7 @@ public class ModelLoader {
         modelList.add(model);
         ball.addCollision(sphereCollision);
         shadow = new GLShadow(gl, model, camShadowShader);
-        modelList.add(shadow);*/
+        modelList.add(shadow);
 
 
         modelList.addAll(loadPalmTrees(gl, shader, shadowShader));
