@@ -61,12 +61,11 @@ public class GLEventListenerImpl implements GLEventListener{
     public void addCameraMotionAction() {
         cameraMovingActionList = new LinkedList<>();
         CameraMovingAction cameraMovingAction = new CameraMovingAction(camera);
-       // cameraMovingAction.addWayPoint(30, new Vector3f(0,6,-10), new Vector3f(0,0,1), 0);
-        cameraMovingAction.addWayPoint(120, new Vector3f(0,4,-60), new Vector3f(0,1,0),0);
-        //cameraMovingAction.addWayPoint(120, new Vector3f(0,6,-10), new Vector3f(0,1,0),0f);
-       // cameraMovingAction.addWayPoint(60, new Vector3f(-5,6,-30));
-       // cameraMovingAction.addWayPoint(30, new Vector3f(-5,6,-30));
-       // cameraMovingAction.addWayPoint(300, new Vector3f(5,4,-40));
+        cameraMovingAction.addWayPoint(180, new Vector3f(0,6,-35), new Vector3f(0,0,1), 0);
+        cameraMovingAction.addWayPoint(120, new Vector3f(15,4,-20), new Vector3f(0,0,1),0);
+        cameraMovingAction.addWayPoint(60, new Vector3f(15,-8,-20), new Vector3f(0,0,1),0);
+        cameraMovingAction.addWayPoint(90, new Vector3f(15,4,-20), new Vector3f(0,1,0),0.02f);
+        cameraMovingAction.addWayPoint(60, new Vector3f(-5,-2,-30), new Vector3f(0,1,0),-0.02f);
         cameraMovingAction.setupMovingAction();
         cameraMovingActionList.add(cameraMovingAction);
     }
@@ -86,13 +85,17 @@ public class GLEventListenerImpl implements GLEventListener{
 
     @Override
     public void display(GLAutoDrawable drawable) {
-        /*if (cameraMovingActionList.size() > 0) {
+        if (cameraMovingActionList.size() > 0) {
             if (cameraMovingActionList.get(0).isMovingActionActive()) {
                 cameraMovingActionList.get(0).doStep();
             } else {
                 cameraMovingActionList.remove(0);
+               /* if (cameraMovingActionList.size() == 0) {
+                    camera.setPosition(new Vector3f(0,6,20));
+                    camera.lookAt(new Vector3f(0,1,-1), -1.50f);
+                }*/
             }
-        }*/
+        }
         GL3 gl = drawable.getGL().getGL3();
 
         gl.glEnable(GL3.GL_BLEND);

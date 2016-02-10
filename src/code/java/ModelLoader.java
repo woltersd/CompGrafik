@@ -41,7 +41,7 @@ public class ModelLoader {
         modelList.add(model);
 
         GLBall ball = new GLBall(gl, "ball.obj", shader, 0.35f, new Point3f(2f, 2f, 0f));
-        ball.setModelMatrixOffset(2f, 2f, 0f);
+        ball.setModelMatrixOffset(4f, 2f, 0f);
         modelList.add(ball);
         shadow = new GLShadow(gl, ball, shadowShader);
         modelList.add(shadow);
@@ -66,6 +66,11 @@ public class ModelLoader {
         shadow = new GLShadow(gl, model, shadowShader);
         modelList.add(shadow);
 
+        collision = new GLPlaneCollision(new Point3f[]{new Point3f(-8,40,0), new Point3f(-8,0,0)}, "y");
+        ball.addCollision(collision);
+        collision = new GLPlaneCollision(new Point3f[]{new Point3f(8,40,0), new Point3f(8,0,0)}, "y");
+        ball.addCollision(collision);
+
 
         model = new GLModel(gl, "cylinder.obj", shader);
         model.setModelMatrixOffset(0f, 0f, 4f);
@@ -80,10 +85,10 @@ public class ModelLoader {
         modelList.add(shadow);
 
 
-        subtractor = new BackgroundSubtractor(gl, 0, canvas);
-        modelList.add(subtractor);
+       // subtractor = new BackgroundSubtractor(gl, 0, canvas);
+       // modelList.add(subtractor);
 
-        GLSphereCollision sphereCollision = new GLSphereCollision(new Point3f(-4f, 0.0f, 0.0f), 1);
+     /*   GLSphereCollision sphereCollision = new GLSphereCollision(new Point3f(-4f, 0.0f, 0.0f), 1);
         model = new GLCam(gl, subtractor, "player1.obj", camShader, -4f, sphereCollision);
         model.setModelMatrixOffset(-4f, 0.0f, 0.0f);
         modelList.add(model);
@@ -97,7 +102,7 @@ public class ModelLoader {
         modelList.add(model);
         ball.addCollision(sphereCollision);
         shadow = new GLShadow(gl, model, camShadowShader);
-        modelList.add(shadow);
+        modelList.add(shadow);*/
 
 
         modelList.addAll(loadPalmTrees(gl, shader, shadowShader));

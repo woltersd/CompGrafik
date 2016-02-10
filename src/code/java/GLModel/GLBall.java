@@ -18,8 +18,8 @@ public class GLBall extends GLModel implements GLObject {
     Vector3f velocity;
     boolean gravityForce;
     final float framesPerSecond = 30f;
-    final float secondsPerFrame = 1 / framesPerSecond;
-    final float airDragPerFrame = 0.001f / framesPerSecond;
+    final float secondsPerFrame = 1f / framesPerSecond;
+    final float airDragPerFrame = 0.00001f / framesPerSecond;
     final float gravity = 0.0981f;
     final float abatement = 0.75f;
 
@@ -31,7 +31,7 @@ public class GLBall extends GLModel implements GLObject {
         this.radius = radius;
         this.pos = pos;
         this.pos.x += 2.2;
-        velocity = new Vector3f(0.4f,0f,0);
+        velocity = new Vector3f(-0.2f,0f,0);
         gravityForce = true;
         collisions = new LinkedList<>();
     }
