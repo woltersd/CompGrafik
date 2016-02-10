@@ -20,9 +20,9 @@ public class ObjFile {
     private ArrayList<Point3f> vertexData;
     private ArrayList<Point3f> normalData;
     private ArrayList<Point2f> textureData;
-    private ArrayList<Short> faceIndexData;
-    private ArrayList<Short> normalIndexData;
-    private ArrayList<Short> textureIndexData;
+    private ArrayList<Integer> faceIndexData;
+    private ArrayList<Integer> normalIndexData;
+    private ArrayList<Integer> textureIndexData;
 
     private boolean normal = false;
     private boolean texture = false;
@@ -77,12 +77,12 @@ public class ObjFile {
         String[] val;
         for (int i = 1; i < values.length; i++) {
             val = values[i].split("/");
-            faceIndexData.add((short) (Short.parseShort(val[0]) - 1));
+            faceIndexData.add((Integer.parseInt(val[0]) - 1));
             if (val.length >= 2 && !val[1].isEmpty()) {
-                textureIndexData.add((short) (Short.parseShort(val[1]) - 1));
+                textureIndexData.add(Integer.parseInt(val[1]) - 1);
             }
             if (val.length == 3 && !val[2].isEmpty()) {
-                normalIndexData.add((short) (Short.parseShort(val[2]) - 1));
+                normalIndexData.add(Integer.parseInt(val[2]) - 1);
             }
         }
     }
@@ -99,15 +99,15 @@ public class ObjFile {
 
     public ArrayList<Point2f> getTextureData(){ return textureData; }
 
-    public ArrayList<Short> getFaceIndexData(){
+    public ArrayList<Integer> getFaceIndexData(){
         return faceIndexData;
     }
 
-    public ArrayList<Short> getNormalIndexData(){
+    public ArrayList<Integer> getNormalIndexData(){
         return normalIndexData;
     }
 
-    public ArrayList<Short> getTextureIndexData(){ return textureIndexData; }
+    public ArrayList<Integer> getTextureIndexData(){ return textureIndexData; }
 
     public boolean normal() {
         return normal;

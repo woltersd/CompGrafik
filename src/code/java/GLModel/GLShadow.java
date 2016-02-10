@@ -25,7 +25,7 @@ public class GLShadow implements GLObject {
             shader.setUniform(gl, entry.getKey(), entry.getValue());
         }
         // draw the triangles
-        gl.glDrawElements(GL3.GL_TRIANGLES, model.getIndexCount(), GL3.GL_UNSIGNED_SHORT, 0);
+        gl.glDrawElements(GL3.GL_TRIANGLES, model.getIndexCount(), GL3.GL_UNSIGNED_INT, 0);
 
         model.unbindBuffer(gl);
     }

@@ -14,7 +14,6 @@ import javax.vecmath.Point4f;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +27,7 @@ public abstract class GLModelAbstract implements GLObject {
     protected ArrayList<Point3f> glVertexData;
     protected ArrayList<Point3f> glNormalData;
     protected ArrayList<Point2f> glTextureData;
-    protected ArrayList<Short> glIndexData;
+    protected ArrayList<Integer> glIndexData;
 
     private Shader shader;
     private Map<String, Object> shaderUniforms;
@@ -85,11 +84,11 @@ public abstract class GLModelAbstract implements GLObject {
         return textureImage;
     }
 
-    public ShortBuffer getIndexBuffer() {
-        ShortBuffer indexBuffer = ShortBuffer.allocate(glIndexData.size());
+    public IntBuffer getIndexBuffer() {
+        IntBuffer indexBuffer = IntBuffer.allocate(glIndexData.size());
 
-        for (short each : glIndexData) {
-            GLBuffers.puts(indexBuffer, each);
+        for (int each : glIndexData) {
+            GLBuffers.puti(indexBuffer, each);
         }
         indexBuffer.rewind();
         return indexBuffer;

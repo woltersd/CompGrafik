@@ -49,7 +49,7 @@ public class GLSkyBoxModel extends GLModelAbstract {
                     -1.0f, 1.0f, -1.0f
             };
 
-    static short indices[] = {
+    static int indices[] = {
             1,2,3,
             2,3,4,
             5,6,7,
@@ -93,9 +93,9 @@ public class GLSkyBoxModel extends GLModelAbstract {
             glVertexData.add(vertexPoint);
         }
         for (int i = 0; i < indices.length / 3; i++) {
-            glIndexData.add((short) (indices[3*i] - 1));
-            glIndexData.add((short) (indices[3*i+1] - 1));
-            glIndexData.add((short) (indices[3*i+2] - 1));
+            glIndexData.add(indices[3*i] - 1);
+            glIndexData.add(indices[3*i+1] - 1);
+            glIndexData.add(indices[3*i+2] - 1);
         }
 
     }
@@ -167,7 +167,7 @@ public class GLSkyBoxModel extends GLModelAbstract {
 
         bindBuffer(gl);
         // draw the triangles
-        gl.glDrawElements(GL3.GL_TRIANGLES, getIndexCount(), GL3.GL_UNSIGNED_SHORT, 0);
+        gl.glDrawElements(GL3.GL_TRIANGLES, getIndexCount(), GL3.GL_UNSIGNED_INT, 0);
       //  unbindBuffer(gl);
         gl.glEnable(GL3.GL_DEPTH_TEST);
     }

@@ -34,7 +34,7 @@ public class Camera {
 
         cameraMatrix = new Matrix4();
 
-        cameraMatrix.makePerspective(50, (float) canvas.getWidth() / (float) canvas.getHeight(), 0.1f, 100f);
+        cameraMatrix.makePerspective(50, (float) canvas.getWidth() / (float) canvas.getHeight(), 0.1f, 200f);
         cameraMatrix.translate(curPosition.x, curPosition.y, curPosition.z);
         cameraMatrix.rotate(3.14159265359f, 0,0,1);
         enableInputListeners();
@@ -195,7 +195,7 @@ public class Camera {
     public void reshapeCalled() {
         cameraMatrix = new Matrix4();
 
-        cameraMatrix.makePerspective(50, (float) canvas.getWidth() / (float) canvas.getHeight(), 0.1f, 100f);
+        cameraMatrix.makePerspective(50, (float) canvas.getWidth() / (float) canvas.getHeight(), 0.1f, 200f);
         cameraMatrix.translate(curPosition.x, curPosition.y, curPosition.z);
         cameraMatrix.rotate(3.14159265359f, 0,0,1);
         // check if angle * -1

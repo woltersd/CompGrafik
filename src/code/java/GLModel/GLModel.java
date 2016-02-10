@@ -94,7 +94,7 @@ public class GLModel extends GLModelAbstract implements GLObject{
             // Look if vertex+normal+texture already saved
             for(int x = 0; x<glVertexData.size(); x++) {
                 if ((glVertexData.get(x) == vertex) && (glNormalData.get(x) == normal) && (glTextureData.get(x) == texture)) {
-                    glIndexData.add((short) x);
+                    glIndexData.add(x);
                     found = true;
                 }
             }
@@ -102,7 +102,7 @@ public class GLModel extends GLModelAbstract implements GLObject{
                 glVertexData.add(vertex);
                 glNormalData.add(normal);
                 glTextureData.add(texture);
-                glIndexData.add((short) (glVertexData.size() - 1));
+                glIndexData.add(glVertexData.size() - 1);
             }
         }
     }
@@ -138,7 +138,7 @@ public class GLModel extends GLModelAbstract implements GLObject{
             getShader().setUniform(gl, entry.getKey(), entry.getValue());
         }
         // draw the triangles
-        gl.glDrawElements(GL3.GL_TRIANGLES, getIndexCount(), GL3.GL_UNSIGNED_SHORT, 0);
+        gl.glDrawElements(GL3.GL_TRIANGLES, getIndexCount(), GL3.GL_UNSIGNED_INT, 0);
 
         unbindBuffer(gl);
     }
