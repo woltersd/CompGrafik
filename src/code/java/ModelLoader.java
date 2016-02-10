@@ -29,7 +29,7 @@ public class ModelLoader {
         camShader.setGlobalUniform("light.position", new float[] {20f, 20f, 0f});
         camShader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
 
-        GLBall ball = new GLBall(gl, "ball.obj", shader, 0.35f, new Point3f(2f, 2f, 0f));
+        GLBall ball = new GLBall(gl, "ball.obj", shader, 0.31f, new Point3f(2f, 2f, 0f));
         ball.setModelMatrixOffset(2f, 2f, 0f);
         modelList.add(ball);
         shadow = new GLShadow(gl, ball, shadowShader);

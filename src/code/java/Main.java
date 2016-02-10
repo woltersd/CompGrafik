@@ -19,8 +19,8 @@ public class Main {
             .getLocalGraphicsEnvironment().getScreenDevices()[0];
 
     public static void main(String[] args) {
-        int width = 1280;
-        int height = 720;
+        int width = 1920;
+        int height = 1080;
 
         for (int i = 0; i < args.length; i++) {
             if (args[i].equals("-height") && args.length > i) {
@@ -56,6 +56,7 @@ public class Main {
         // makes problems
         // device.setFullScreenWindow(frame);
         frame.setSize(width, height);
+        frame.setUndecorated(true);
         frame.setVisible(true);
 
 

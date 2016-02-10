@@ -1,6 +1,7 @@
 package code.java.GLModel;
 
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 /**
  * @author Robert
@@ -16,11 +17,8 @@ public class GLSphereCollision implements GLCollision {
         this.radius = radius;
     }
 
-    public boolean collides(Point3f pos, float radius) {
-        if(this.pos.distance(pos) < (radius*2)){
-            return true;
-        }
-        return false;
+    public boolean collides(Point3f pos, float radius, Vector3f velocity) {
+        return this.pos.distance(pos) < (radius * 2);
     }
 
     public void setPos(Point3f position){
