@@ -72,13 +72,12 @@ public class GLSkyBoxModel extends GLModelAbstract {
         super();
         buildGLData();
 
-
         this.canvas = canvas;
 
         setShader(shader);
         projection = new Matrix4();
         projection.makePerspective(50, canvas.getWidth() / (float) canvas.getHeight(), 0.1f, 100f);
-        setShaderUniform("projection", projection);
+        //setShaderUniform("projection", projection);
 
         setVertexCount(glVertexData.size() * 3);
         setIndexCount(glIndexData.size());
@@ -134,6 +133,7 @@ public class GLSkyBoxModel extends GLModelAbstract {
         }
         gl.glTexParameteri(GL3.GL_TEXTURE_CUBE_MAP, GL3.GL_TEXTURE_MAG_FILTER, GL3.GL_LINEAR);
         gl.glTexParameteri(GL3.GL_TEXTURE_CUBE_MAP, GL3.GL_TEXTURE_MIN_FILTER, GL3.GL_LINEAR);
+
         gl.glTexParameteri(GL3.GL_TEXTURE_CUBE_MAP, GL3.GL_TEXTURE_WRAP_S, GL3.GL_CLAMP_TO_EDGE);
         gl.glTexParameteri(GL3.GL_TEXTURE_CUBE_MAP, GL3.GL_TEXTURE_WRAP_T, GL3.GL_CLAMP_TO_EDGE);
         gl.glTexParameteri(GL3.GL_TEXTURE_CUBE_MAP, GL3.GL_TEXTURE_WRAP_R, GL3.GL_CLAMP_TO_EDGE);

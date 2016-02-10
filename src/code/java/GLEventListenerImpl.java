@@ -55,7 +55,7 @@ public class GLEventListenerImpl implements GLEventListener{
     }
 
     private void initializeModels (GL3 gl) {
-        modelList = ModelLoader.loadModelList(gl);
+        modelList = ModelLoader.loadModelList(gl, canvas);
     }
 
     public void addCameraMotionAction() {
@@ -104,6 +104,7 @@ public class GLEventListenerImpl implements GLEventListener{
         for(GLObject each: modelList){
             each.getShader().bind(gl);
             each.getShader().setGlobalUniform("cameraMatrix", camera.getCameraMatrix());
+
             each.display(gl);
             each.getShader().unbind(gl);
         }

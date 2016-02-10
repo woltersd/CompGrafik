@@ -2,6 +2,7 @@ package code.java;
 
 import code.java.GLModel.*;
 import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.awt.GLCanvas;
 
 import javax.vecmath.Point3f;
 import java.util.LinkedList;
@@ -9,7 +10,7 @@ import java.util.List;
 
 public class ModelLoader {
 
-    public static List<GLObject> loadModelList (GL3 gl) {
+    public static List<GLObject> loadModelList (GL3 gl, GLCanvas canvas) {
         List<GLObject> modelList;
         GLModel model;
         GLShadow shadow;
@@ -29,20 +30,27 @@ public class ModelLoader {
         camShader.setGlobalUniform("light.position", new float[] {20f, 20f, 0f});
         camShader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
 
-        GLBall ball = new GLBall(gl, "ball.obj", shader, 0.31f, new Point3f(4f, 2f, 0f));
+        Shader skyShader = new Shader(gl, "/src/code/glsl/","sky_VS.glsl", "sky_FS.glsl");
+        model = new GLModel(gl, "sky.obj", skyShader);
+        model.setModelMatrixScale(10,10,10);
+        modelList.add(model);
+
+        GLBall ball = new GLBall(gl, "ball.obj", shader, 0.35f, new Point3f(2f, 2f, 0f));
         ball.setModelMatrixOffset(2f, 2f, 0f);
         modelList.add(ball);
         shadow = new GLShadow(gl, ball, shadowShader);
         modelList.add(shadow);
 
-        model = new GLModel(gl, "field.obj", shader);
+        model = new GLModel(gl, "outline.obj", new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "color_FS.glsl"));
+        model.setModelMatrixOffset(0,0.01f,0);
+        model.setShaderUniform("light.position", new float[] {20f, 20f, 0f});
+        model.setShaderUniform("light.intensities", new float[] {1f, 1f, 1f});
+        modelList.add(model);
+
+        model = new GLModel(gl, "ground.obj", shader);
         modelList.add(model);
         collision = new GLPlaneCollision(new Point3f[]{new Point3f(8,0,0), new Point3f(0,0,0)}, "x");
         ball.addCollision(collision);
-
-        model = new GLModel(gl, "field.obj", shader);
-        model.setModelMatrixOffset(-8f, 0f, 0f);
-        modelList.add(model);
         collision = new GLPlaneCollision(new Point3f[]{new Point3f(0,0,0), new Point3f(-8,0,0)}, "x");
         ball.addCollision(collision);
 
@@ -65,27 +73,26 @@ public class ModelLoader {
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
         modelList.add(shadow);
-
-
-
-        //subtractor = new BackgroundSubtractor(gl, 0, canvas);
-        //modelList.add(subtractor);
-
+        
         /*
-        model = new GLCam(gl, subtractor, "player1.obj", camShader, -4f);
+        subtractor = new BackgroundSubtractor(gl, 0, canvas);
+        modelList.add(subtractor);
+
+        GLSphereCollision sphereCollision = new GLSphereCollision(new Point3f(-4f, 0.0f, 0.0f), 1);
+        model = new GLCam(gl, subtractor, "player1.obj", camShader, -4f, sphereCollision);
         model.setModelMatrixOffset(-4f, 0.0f, 0.0f);
         modelList.add(model);
+        ball.addCollision(sphereCollision);
         //shadow = new GLShadow(gl, model, shadowShader);
         //modelList.add(shadow);
 
-        model = new GLCam(gl, subtractor, "player2.obj", camShader, 4);
+        sphereCollision = new GLSphereCollision(new Point3f(4f, 0.0f, 0.0f), 1);
+        model = new GLCam(gl, subtractor, "player2.obj", camShader, 4, sphereCollision);
         model.setModelMatrixOffset(4f, 0.0f, 0.0f);
         modelList.add(model);
+        ball.addCollision(sphereCollision);
         //shadow = new GLShadow(gl, model, shadowShader);
-        //modelList.add(shadow)
-
-        shadow = new GLShadow(gl, model, shadowShader);
-        modelList.add(shadow);
+        //modelList.add(shadow);
         */
 
         modelList.addAll(loadPalmTrees(gl, shader, shadowShader));

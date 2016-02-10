@@ -42,7 +42,7 @@ public class GLModel extends GLModelAbstract implements GLObject{
 
         setShader(shader);
         setShaderUniform("modelMatrix", getModelMatrix());
-        setShaderUniform("tex_1", 0);
+        //setShaderUniform("tex_1", 0);
     }
 
     protected void init(String objPath){
