@@ -61,15 +61,17 @@ public class GLEventListenerImpl implements GLEventListener{
     }
 
     public void addCameraMotionAction() {
-       /* cameraMovingActionList = new LinkedList<>();
+        cameraMovingActionList = new LinkedList<>();
         CameraMovingAction cameraMovingAction = new CameraMovingAction(camera);
         cameraMovingAction.addWayPoint(180, new Vector3f(0,6,-35), new Vector3f(0,0,1), 0);
+        /*
         cameraMovingAction.addWayPoint(120, new Vector3f(15,4,-20), new Vector3f(0,0,1),0);
         cameraMovingAction.addWayPoint(60, new Vector3f(15,-8,-20), new Vector3f(0,0,1),0);
         cameraMovingAction.addWayPoint(90, new Vector3f(15,4,-20), new Vector3f(0,1,0),0.02f);
         cameraMovingAction.addWayPoint(60, new Vector3f(-5,-2,-30), new Vector3f(0,1,0),-0.02f);
+        */
         cameraMovingAction.setupMovingAction();
-        cameraMovingActionList.add(cameraMovingAction);*/
+        cameraMovingActionList.add(cameraMovingAction);
     }
 
     @Override
@@ -87,13 +89,13 @@ public class GLEventListenerImpl implements GLEventListener{
 
     @Override
     public void display(GLAutoDrawable drawable) {
-      /*  if (cameraMovingActionList.size() > 0) {
+        if (cameraMovingActionList.size() > 0) {
             if (cameraMovingActionList.get(0).isMovingActionActive()) {
                 cameraMovingActionList.get(0).doStep();
             } else {
                 cameraMovingActionList.remove(0);
             }
-        }*/
+        }
 
         GL3 gl = drawable.getGL().getGL3();
 

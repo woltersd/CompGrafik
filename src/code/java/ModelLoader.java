@@ -40,7 +40,7 @@ public class ModelLoader {
 
         Shader skyShader = new Shader(gl, "/src/code/glsl/","sky_VS.glsl", "sky_FS.glsl");
         model = new GLModel(gl, "sky.obj", skyShader);
-        model.setModelMatrixScale(10,10,10);
+        model.setModelMatrixScale(12,12,12);
         modelList.add(model);
 
         GLBall ball = new GLBall(gl, "ball.obj", shader, 0.35f, new Point3f(2f, 2f, 0f));
@@ -87,7 +87,7 @@ public class ModelLoader {
         shadow = new GLShadow(gl, model, shadowShader);
         modelList.add(shadow);
 
-
+        /*
         subtractor = new BackgroundSubtractor(gl, 0, canvas);
         modelList.add(subtractor);
 
@@ -106,6 +106,7 @@ public class ModelLoader {
         ball.addCollision(sphereCollision);
         shadow = new GLShadow(gl, model, camShadowShader);
         modelList.add(shadow);
+        */
 
 
         modelList.addAll(loadPalmTrees(gl, shader, shadowShader));
