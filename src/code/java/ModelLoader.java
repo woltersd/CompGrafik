@@ -29,7 +29,7 @@ public class ModelLoader {
         camShader.setGlobalUniform("light.position", new float[] {20f, 20f, 0f});
         camShader.setGlobalUniform("light.intensities", new float[] {1f, 1f, 1f});
 
-        GLBall ball = new GLBall(gl, "ball.obj", shader, 0.31f, new Point3f(2f, 2f, 0f));
+        GLBall ball = new GLBall(gl, "ball.obj", shader, 0.31f, new Point3f(4f, 2f, 0f));
         ball.setModelMatrixOffset(2f, 2f, 0f);
         modelList.add(ball);
         shadow = new GLShadow(gl, ball, shadowShader);
@@ -46,6 +46,13 @@ public class ModelLoader {
         collision = new GLPlaneCollision(new Point3f[]{new Point3f(0,0,0), new Point3f(-8,0,0)}, "x");
         ball.addCollision(collision);
 
+        model = new GLModel(gl, "net.obj", shader);
+        modelList.add(model);
+        collision = new GLPlaneCollision(new Point3f[]{new Point3f(0,2.43f,0), new Point3f(0,1.43f,0)}, "y");
+        ball.addCollision(collision);
+        shadow = new GLShadow(gl, model, shadowShader);
+        modelList.add(shadow);
+
 
         model = new GLModel(gl, "cylinder.obj", shader);
         model.setModelMatrixOffset(0f, 0f, 4f);
@@ -59,12 +66,7 @@ public class ModelLoader {
         shadow = new GLShadow(gl, model, shadowShader);
         modelList.add(shadow);
 
-        model = new GLModel(gl, "net.obj", shader);
-        modelList.add(model);
-        collision = new GLPlaneCollision(new Point3f[]{new Point3f(0,2.43f,0), new Point3f(0,1.43f,0)}, "y");
-        ball.addCollision(collision);
-        shadow = new GLShadow(gl, model, shadowShader);
-        modelList.add(shadow);
+
 
         //subtractor = new BackgroundSubtractor(gl, 0, canvas);
         //modelList.add(subtractor);

@@ -18,7 +18,7 @@ public class GLBall extends GLModel implements GLObject {
     Vector3f velocity;
     boolean gravityForce;
     final float secondsPerFrame = 1 / 30f;
-    final float airDrag = 0.0005f;
+    final float airDrag = 0.00005f;
     final float gravity = 0.0981f;
     final float abatement = 0.75f;
 
@@ -29,7 +29,7 @@ public class GLBall extends GLModel implements GLObject {
         super(gl, objFile, shader);
         this.radius = radius;
         this.pos = pos;
-        velocity = new Vector3f(0,-0.05f,0);
+        velocity = new Vector3f(-0.1f,-0.05f,0);
         gravityForce = true;
         collisions = new LinkedList<>();
     }
@@ -52,11 +52,32 @@ public class GLBall extends GLModel implements GLObject {
         if (gravityForce) {
             velocity.y = -gravity * secondsPerFrame + velocity.y;
         }
+
         if (velocity.x != 0) {
-            velocity.x += velocity.x > 0 ? -airDrag : airDrag;
+            if (velocity.x > 0 ) {
+                velocity.x += -airDrag;
+                if (velocity.x < 0) {
+                    velocity.x = 0;
+                }
+            } else {
+                velocity.x += airDrag;
+                if (velocity.x > 0) {
+                    velocity.x = 0;
+                }
+            }
         }
         if (velocity.z != 0) {
-            velocity.z += velocity.z > 0 ? -airDrag : airDrag;
+            if (velocity.z > 0 ) {
+                velocity.z += -airDrag;
+                if (velocity.z < 0) {
+                    velocity.z = 0;
+                }
+            } else {
+                velocity.z += airDrag;
+                if (velocity.z > 0) {
+                    velocity.z = 0;
+                }
+            }
         }
     }
 
