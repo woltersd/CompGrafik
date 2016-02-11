@@ -10,16 +10,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * Based on GLSLProgramObject.h - Wrapper for GLSL program objects
  *
- * @author Robert
- * @author Peter
+ * Author: Louis Bavoil
+ * Email: sdkfeedback@nvidia.com
+ *
+ * Copyright (c) NVIDIA Corporation. All rights reserved.
  */
 
-//TODO Cleanup
 public class Shader{
+    public final char VERTEX_SHADER = 'V';
+    public final char FRAGMENT_SHADER = 'F';
 
-    protected ArrayList<Integer> vertexShaders;
-    protected ArrayList<Integer> fragmentShaders;
+    protected ArrayList<Integer> vertexShader;
+    protected ArrayList<Integer> fragmentShader;
     private Map<String, Object> globalUniforms;
     private int progId;
 
@@ -28,42 +32,42 @@ public class Shader{
     }
 
     public Shader(GL3 gl) {
-        vertexShaders = new ArrayList<>();
-        fragmentShaders = new ArrayList<>();
+        vertexShader = new ArrayList<>();
+        fragmentShader = new ArrayList<>();
         progId = 0;
         globalUniforms = new HashMap<>();
     }
 
-    public Shader(GL3 gl, String shadersFilepath, String vertexShader, String fragmentShader) {
+    public Shader(GL3 gl, String shaderFilepath, String vertexShader, String fragmentShader) {
 
         this(gl);
 
-        attachVertexShader(gl, shadersFilepath + vertexShader);
-        attachFragmentShader(gl, shadersFilepath + fragmentShader);
+        attachShader(gl, shaderFilepath + vertexShader, VERTEX_SHADER);
+        attachShader(gl, shaderFilepath + fragmentShader, FRAGMENT_SHADER);
 
         initializeProgram(gl, true);
     }
 
-    public Shader(GL3 gl, String shadersFilepath, String[] vertexShaders, String[] fragmentShaders) {
+    public Shader(GL3 gl, String shaderFilepath, String[] vertexShader, String[] fragmentShader) {
 
         this(gl);
 
-        for (String vertexShader : vertexShaders) {
-            attachVertexShader(gl, shadersFilepath + vertexShader);
+        for (String vShader : vertexShader) {
+            attachShader(gl, shaderFilepath + vShader, VERTEX_SHADER);
         }
-        for (String fragmentShader : fragmentShaders) {
-            attachFragmentShader(gl, shadersFilepath + fragmentShader);
+        for (String fShader : fragmentShader) {
+            attachShader(gl, shaderFilepath + fShader, FRAGMENT_SHADER);
         }
 
         initializeProgram(gl, true);
     }
 
     public void destroy(GL3 gl) {
-        for (Integer vertexShader : vertexShaders) {
-            gl.glDeleteShader(vertexShader);
+        for (Integer vShader : vertexShader) {
+            gl.glDeleteShader(vShader);
         }
-        for (Integer fragmentShader : fragmentShaders) {
-            gl.glDeleteShader(fragmentShader);
+        for (Integer fShader : fragmentShader) {
+            gl.glDeleteShader(fShader);
         }
         if (progId != 0) {
             gl.glDeleteProgram(progId);
@@ -81,74 +85,7 @@ public class Shader{
         gl.glUseProgram(0);
     }
 
-    public final void attachVertexShader(GL3 gl, String filename) {
-        //
-        InputStream inputStream = null;
-
-        try {
-            inputStream = new FileInputStream(System.getProperty("user.dir").replaceAll("\\\\", "/") + filename);
-        } catch (FileNotFoundException e) {
-            System.err.println("Unable to find the shader file " + filename);
-        }
-        if (inputStream == null) {
-            System.err.println("Problem with InputStream");
-            return;
-        }
-        BufferedReader input = null;
-        String content = "";
-        try {
-            input = new BufferedReader(new InputStreamReader(inputStream));
-            String line;
-
-            while ((line = input.readLine()) != null) {
-                content += line + "\n";
-            }
-        } catch (FileNotFoundException fileNotFoundException) {
-            System.err.println("Unable to find the shader file " + filename);
-        } catch (IOException iOException) {
-            System.err.println("Problem reading the shader file " + filename);
-        } finally {
-            try {
-                if (input != null) {
-                    input.close();
-                }
-            } catch (IOException iOException) {
-                System.out.println("Problem closing the BufferedReader, " + filename);
-            }
-        }
-
-        int iID = gl.glCreateShader(GL3.GL_VERTEX_SHADER);
-
-        String[] akProgramText = new String[1];
-        // find and replace program name with "main"
-        akProgramText[0] = content;
-
-        int[] params = new int[]{0};
-
-        int[] aiLength = new int[1];
-        aiLength[0] = akProgramText[0].length();
-        int iCount = 1;
-
-        gl.glShaderSource(iID, iCount, akProgramText, aiLength, 0);
-
-        gl.glCompileShader(iID);
-
-        gl.glGetShaderiv(iID, GL3.GL_COMPILE_STATUS, params, 0);
-
-        if (params[0] != 1) {
-            System.err.println(filename);
-            System.err.println("compile status: " + params[0]);
-            gl.glGetShaderiv(iID, GL3.GL_INFO_LOG_LENGTH, params, 0);
-            System.err.println("log length: " + params[0]);
-            byte[] abInfoLog = new byte[params[0]];
-            gl.glGetShaderInfoLog(iID, params[0], params, 0, abInfoLog, 0);
-            System.err.println(new String(abInfoLog));
-            System.exit(-1);
-        }
-        vertexShaders.add(iID);
-    }
-
-    public final void attachFragmentShader(GL3 gl, String filename) {
+    public final void attachShader(GL3 gl, String filename, char shader) {
         InputStream inputStream = null;
 
         try {
@@ -184,7 +121,15 @@ public class Shader{
             }
         }
 
-        int iID = gl.glCreateShader(GL3.GL_FRAGMENT_SHADER);
+        int iID;
+        switch (shader){
+            case FRAGMENT_SHADER: iID = gl.glCreateShader(GL3.GL_FRAGMENT_SHADER);
+                break;
+            case VERTEX_SHADER: iID = gl.glCreateShader(GL3.GL_VERTEX_SHADER);
+                break;
+            default: System.err.println("Shader not supported"); iID = 0;
+                break;
+        }
 
         String[] akProgramText = new String[1];
         // find and replace program name with "main"
@@ -212,7 +157,13 @@ public class Shader{
             System.err.println(new String(abInfoLog));
             System.exit(-1);
         }
-        fragmentShaders.add(iID);
+
+        switch (shader){
+            case FRAGMENT_SHADER: fragmentShader.add(iID);
+                break;
+            case VERTEX_SHADER: vertexShader.add(iID);
+                break;
+        }
     }
 
     public void setGlobalUniform(String name, Object object)  {
@@ -287,12 +238,12 @@ public class Shader{
     public final void initializeProgram(GL3 gl, boolean cleanUp) {
         progId = gl.glCreateProgram();
 
-        for (Integer vertexShader : vertexShaders) {
-            gl.glAttachShader(progId, vertexShader);
+        for (Integer vShader : vertexShader) {
+            gl.glAttachShader(progId, vShader);
         }
 
-        for (Integer fragmentShader : fragmentShaders) {
-            gl.glAttachShader(progId, fragmentShader);
+        for (Integer fShader : fragmentShader) {
+            gl.glAttachShader(progId, fShader);
         }
 
         gl.glLinkProgram(progId);
@@ -314,14 +265,14 @@ public class Shader{
         gl.glValidateProgram(progId);
 
         if (cleanUp) {
-            for (Integer vertexShader : vertexShaders) {
-                gl.glDetachShader(progId, vertexShader);
-                gl.glDeleteShader(vertexShader);
+            for (Integer vShader : vertexShader) {
+                gl.glDetachShader(progId, vShader);
+                gl.glDeleteShader(vShader);
             }
 
-            for (Integer fragmentShader : fragmentShaders) {
-                gl.glDetachShader(progId, fragmentShader);
-                gl.glDeleteShader(fragmentShader);
+            for (Integer fShader : fragmentShader) {
+                gl.glDetachShader(progId, fShader);
+                gl.glDeleteShader(fShader);
             }
         }
     }
