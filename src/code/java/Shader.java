@@ -12,10 +12,10 @@ import java.util.Map;
 /**
  * Based on GLSLProgramObject.h - Wrapper for GLSL program objects
  *
- * Author: Louis Bavoil
- * Email: sdkfeedback@nvidia.com
+ * OriginalConcept: Louis Bavoil
  *
- * Copyright (c) NVIDIA Corporation. All rights reserved.
+ * Edited by Robert Martin
+ *           Peter Woltersdorf
  */
 
 public class Shader{

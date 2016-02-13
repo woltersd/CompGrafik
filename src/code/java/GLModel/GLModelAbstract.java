@@ -1,6 +1,5 @@
 package code.java.GLModel;
 
-import code.java.ObjFile;
 import code.java.Shader;
 import com.jogamp.opengl.GL3;
 import com.jogamp.opengl.math.Matrix4;
@@ -10,7 +9,6 @@ import org.opencv.core.Mat;
 
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
-import javax.vecmath.Point4f;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
@@ -18,8 +16,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * @author peter
+ * @author robert
+ */
+
 public abstract class GLModelAbstract implements GLObject {
     static{ System.loadLibrary(Core.NATIVE_LIBRARY_NAME); }
+
+
+    private boolean activeModel;
 
     protected Mat image;
     protected ByteBuffer textureImage;
@@ -56,6 +62,8 @@ public abstract class GLModelAbstract implements GLObject {
         vbo = new int[1]; //Vertex Buffer Object
         ibo = new int[1]; //Index  Buffer Object
         tbo = new int[1]; //Texture Buffer Object
+        activeModel = true;
+
     }
 
     public abstract void display(GL3 gl);
@@ -193,5 +201,25 @@ public abstract class GLModelAbstract implements GLObject {
 
     public void setTbo(int[] tbo) {
         this.tbo = tbo;
+    }
+
+    @Override
+    public void activateModel() {
+        activeModel = true;
+    }
+
+    @Override
+    public void disableModel() {
+        activeModel = false;
+    }
+
+    @Override
+    public void toggleModel() {
+        activeModel = !activeModel;
+    }
+
+    @Override
+    public boolean isActive() {
+        return activeModel;
     }
 }

@@ -10,16 +10,16 @@ import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
 
 import javax.vecmath.Point2f;
-import javax.vecmath.Point3f;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 /**
  * @author Robert
+ * @author peter
  */
-public class BackgroundSubtractor implements GLObject, KeyListener {
+public class BackgroundSubtractor implements GLObject, InputWaiter {
 
     static{ System.loadLibrary(Core.NATIVE_LIBRARY_NAME); }
 
@@ -40,9 +40,13 @@ public class BackgroundSubtractor implements GLObject, KeyListener {
 
     private int[] tbo; //Texture Buffer Object
 
+    private InputListener inputListener;
+    private boolean activeModel;
 
-    public BackgroundSubtractor(GL3 gl, int cam, GLCanvas canvas){
-        canvas.addKeyListener(this);
+    public BackgroundSubtractor(GL3 gl, int cam, GLCanvas canvas, InputListener inputListener){
+
+        this.inputListener = inputListener;
+        inputListener.addInputWaiter(EventType.Key_Typed, this);
 
         camera = new VideoCapture(cam);
 
@@ -66,6 +70,8 @@ public class BackgroundSubtractor implements GLObject, KeyListener {
         camera.read(image);
         buildForeground();
         initializeBuffers(gl);
+
+        activeModel = true;
     }
 
     private void initializeBuffers(GL3 gl){
@@ -167,6 +173,21 @@ public class BackgroundSubtractor implements GLObject, KeyListener {
         }
     }
 
+    @Override
+    public void inputEventHappened(InputEvent event) {
+        if (event instanceof KeyEvent) {
+            switch (((KeyEvent)event).getKeyChar()) {
+                case 'r':
+                    firstFrame = null;
+                    break;
+                case '1':
+                    toggleModel();
+                    break;
+            }
+        }
+
+    }
+
     public int[] getTbo(){
         return tbo;
     }
@@ -182,19 +203,22 @@ public class BackgroundSubtractor implements GLObject, KeyListener {
     }
 
     @Override
-    public void keyPressed(KeyEvent keyEvent) {
+    public void activateModel() {
+        activeModel = true;
     }
 
     @Override
-    public void keyReleased(KeyEvent keyEvent) {
+    public void disableModel() {
+        activeModel = false;
     }
 
     @Override
-    public void keyTyped(KeyEvent e) {
-        switch (e.getKeyChar()) {
-            case 'r':
-                firstFrame = null;
-                break;
-        }
+    public void toggleModel() {
+        activeModel = !activeModel;
+    }
+
+    @Override
+    public boolean isActive() {
+        return activeModel;
     }
 }

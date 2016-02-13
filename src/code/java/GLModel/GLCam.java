@@ -1,22 +1,26 @@
 package code.java.GLModel;
 
 import code.java.BackgroundSubtractor;
+import code.java.InputListener;
+import code.java.InputWaiter;
 import code.java.Shader;
 import com.jogamp.opengl.GL3;
-import com.jogamp.opengl.math.Matrix4;
 import com.jogamp.opengl.util.GLBuffers;
 import org.opencv.core.Mat;
 import org.opencv.videoio.VideoCapture;
 
 import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 /**
  * @author Robert
+ * @author peter
  */
-public class GLCam extends GLModel implements GLObject{
+public class GLCam extends GLModel implements GLObject, InputWaiter{
 
     private VideoCapture camera;
     private BackgroundSubtractor subtractor;
@@ -25,7 +29,7 @@ public class GLCam extends GLModel implements GLObject{
     private short player;
     private GLSphereCollision sphereCollision;
 
-    public GLCam(GL3 gl, int cam, String objFile, Shader shader) {
+    public GLCam(GL3 gl, int cam, String objFile, Shader shader, InputListener inputListener) {
         super();
         String objPath = System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/" + objFile;
         init(objPath);
@@ -40,13 +44,15 @@ public class GLCam extends GLModel implements GLObject{
         setShader(shader);
         setShaderUniform("modelMatrix", getModelMatrix());
         setShaderUniform("tex_1", 0);
+
+        inputListener.addInputWaiter(EventType.Key_Typed, this);
     }
 
-    public GLCam(GL3 gl, BackgroundSubtractor subtractor, String objFile, Shader shader, float offset, GLSphereCollision sphereCollision){
+    public GLCam(GL3 gl, BackgroundSubtractor subtractor, String objFile, Shader shader, float offset, GLSphereCollision sphereCollision, InputListener inputListener){
         super();
         this.subtractor = subtractor;
         setTbo(subtractor.getTbo());
-        if(objFile == "player1.obj"){
+        if(objFile.equals("player1.obj")){
             player = 1;
         }else {
             player = 2;
@@ -65,6 +71,8 @@ public class GLCam extends GLModel implements GLObject{
         setShaderUniform("modelMatrix", getModelMatrix());
         setShaderUniform("image", 0);
         setShaderUniform("thresh", 1);
+
+        inputListener.addInputWaiter(EventType.Key_Typed, this);
     }
 
     protected void initializeBuffers(GL3 gl) {
@@ -114,4 +122,14 @@ public class GLCam extends GLModel implements GLObject{
         return new Point3f(initOffset.x + playerOffset.x, initOffset.y + playerOffset.y, initOffset.z);
     }
 
+    @Override
+    public void inputEventHappened(InputEvent event) {
+        if (event instanceof KeyEvent) {
+            switch (((KeyEvent) event).getKeyChar()) {
+                case '1':
+                    toggleModel();
+                    break;
+            }
+        }
+    }
 }

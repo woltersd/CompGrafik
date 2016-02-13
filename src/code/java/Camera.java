@@ -9,27 +9,30 @@ import java.awt.event.*;
 /**
  * @author peter
  * */
-public class Camera {
+public class Camera implements  InputWaiter{
     private Matrix4 cameraMatrix;
     private Vector3f xAxis;
     private Vector3f yAxis;
     private Vector3f zAxis;
     private GLCanvas canvas;
     private Vector3f curPosition;
+    private Integer oldMouseX;
+    private Integer oldYMouseY;
 
-    private KeyListenerImpl keyListener;
-    private MouseMotionListenerImpl mouseMotionListener;
     private boolean inputListenersActive;
+    private InputListener inputListener;
 
 
 
-    public Camera(GLCanvas canvas) {
+    public Camera(GLCanvas canvas, InputListener inputListener) {
 
         this.canvas = canvas;
         xAxis = new Vector3f(1,0,0);
         yAxis = new Vector3f(0,1,0);
         zAxis = new Vector3f(0,0,1);
 
+        oldMouseX = null;
+        oldYMouseY = null;
         curPosition = new Vector3f(0,4,-60);
 
         cameraMatrix = new Matrix4();
@@ -37,9 +40,9 @@ public class Camera {
         cameraMatrix.makePerspective(50, (float) canvas.getWidth() / (float) canvas.getHeight(), 0.1f, 200f);
         cameraMatrix.translate(curPosition.x, curPosition.y, curPosition.z);
         cameraMatrix.rotate(3.14159265359f, 0,0,1);
+
+        this.inputListener = inputListener;
         enableInputListeners();
-
-
 
     }
 
@@ -175,16 +178,16 @@ public class Camera {
     }
 
     public void disableInputListeners() {
-        canvas.removeKeyListener(keyListener);
-        canvas.removeMouseMotionListener(mouseMotionListener);
-        inputListenersActive = false;
+        if (inputListenersActive) {
+            inputListener.removeInputWaiter(EventType.Key_Typed, this);
+            inputListener.removeInputWaiter(EventType.Mouse_Moved, this);
+            inputListenersActive = false;
+        }
     }
 
     public void enableInputListeners() {
-        keyListener = new KeyListenerImpl();
-        canvas.addKeyListener(keyListener);
-        mouseMotionListener = new MouseMotionListenerImpl();
-        canvas.addMouseMotionListener(mouseMotionListener);
+        inputListener.addInputWaiter(EventType.Mouse_Moved, this);
+        inputListener.addInputWaiter(EventType.Key_Typed, this);
         inputListenersActive = true;
     }
 
@@ -240,10 +243,21 @@ public class Camera {
         return  zAxis;
     }
 
-    private class KeyListenerImpl implements KeyListener {
-        @Override
-        public void keyTyped(KeyEvent e) {
-            switch (e.getKeyChar()) {
+    public void resetCamera() {
+        curPosition = new Vector3f(0,4,-60);
+        cameraMatrix = new Matrix4();
+        cameraMatrix.makePerspective(50, (float) canvas.getWidth() / (float) canvas.getHeight(), 0.1f, 200f);
+        cameraMatrix.translate(curPosition.x, curPosition.y, curPosition.z);
+        cameraMatrix.rotate(3.14159265359f, 0,0,1);
+        xAxis = new Vector3f(1,0,0);
+        yAxis = new Vector3f(0,1,0);
+        zAxis = new Vector3f(0,0,1);
+    }
+
+    @Override
+    public void inputEventHappened(InputEvent event) {
+        if (event instanceof KeyEvent) {
+            switch (((KeyEvent) event).getKeyChar()) {
                 case 'w':
                     moveCamera(0.25f, zAxis);
                     break;
@@ -257,60 +271,35 @@ public class Camera {
                     moveCamera(-0.025f, xAxis);
                     break;
                 case 'q':
-                    rotateAroundZAxis(0.025f);
-                    break;
-                case 'e':
                     rotateAroundZAxis(-0.025f);
                     break;
+                case 'e':
+                    rotateAroundZAxis(0.025f);
+                    break;
+                case KeyEvent.VK_BACK_SPACE:
+                    resetCamera();
+                    break;
             }
-        }
+        } else if (event instanceof MouseEvent) {
+            final float rotationScale = 0.002f;
+            if (oldMouseX == null) {
+                oldMouseX = ((MouseEvent)event).getX();
+                oldYMouseY = ((MouseEvent)event).getY();
+            } else {
+                int newX = ((MouseEvent)event).getX();
+                int newY = ((MouseEvent)event).getY();
+                if(event.isAltDown()) {
+                    if (newX != oldMouseX) {
+                        Camera.this.rotateAroundYAxis((float) (newX - oldMouseX) * rotationScale);
+                    }
 
-        @Override
-        public void keyPressed(KeyEvent e) {
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-        }
-    }
-
-    private class MouseMotionListenerImpl implements MouseMotionListener {
-        Integer oldX;
-        Integer oldY;
-
-        public MouseMotionListenerImpl() {
-            oldX = null;
-            oldY = null;
-        }
-
-        @Override
-        public void mouseDragged(MouseEvent e) {
-
-        }
-
-        @Override
-        public void mouseMoved(MouseEvent e) {
-               final float rotationScale = 0.002f;
-               if (oldX == null) {
-                   oldX = e.getX();
-                   oldY = e.getY();
-               } else {
-                   int newX = e.getX();
-                   int newY = e.getY();
-                   if(e.isAltDown()) {
-                       if (newX != oldX) {
-                           Camera.this.rotateAroundYAxis((float) (newX - oldX) * rotationScale);
-
-                       }
-
-                       if (newY != oldY) {
-                           Camera.this.rotateAroundXAxis((newY - oldY) * rotationScale);
-
-                       }
-                   }
-                   oldX = newX;
-                   oldY = newY;
-               }
+                    if (newY != oldYMouseY) {
+                        Camera.this.rotateAroundXAxis((newY - oldYMouseY) * rotationScale);
+                    }
+                }
+                oldMouseX = newX;
+                oldYMouseY = newY;
+            }
         }
     }
 }

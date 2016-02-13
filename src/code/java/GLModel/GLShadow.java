@@ -7,15 +7,18 @@ import java.util.Map;
 
 /**
  * @author Robert
+ * @author peter
  */
 public class GLShadow implements GLObject {
 
     private GLModel model;
     private Shader shader;
+    private boolean activeModel;
 
     public GLShadow(GL3 gl, GLModel model, Shader shader){
         this.model = model;
         this.shader = shader;
+        this.activeModel = true;
     }
 
     public void display(GL3 gl) {
@@ -36,4 +39,23 @@ public class GLShadow implements GLObject {
         shader.destroy(gl);
     }
 
+    @Override
+    public void activateModel() {
+        activeModel = true;
+    }
+
+    @Override
+    public void disableModel() {
+        activeModel = false;
+    }
+
+    @Override
+    public void toggleModel() {
+        activeModel = !activeModel;
+    }
+
+    @Override
+    public boolean isActive() {
+        return activeModel;
+    }
 }

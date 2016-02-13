@@ -1,0 +1,13 @@
+Benutzte Tutorials:
+http://www.opengl-tutorial.org/
+http://www.tomdalling.com/blog/category/modern-opengl/
+https://en.wikibooks.org/wiki/OpenGL_Programming
+
+Obj Files:
+palmTree
+http://tf3dm.com/3d-model/my-palm-81844.html
+Grass
+http://tf3dm.com/3d-model/grass-low-poly-59616.html
+
+
+

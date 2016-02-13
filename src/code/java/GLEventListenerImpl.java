@@ -7,25 +7,22 @@ import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.util.FPSAnimator;
 
-import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.nio.IntBuffer;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
  * @author peter
  * @author robert
  */
-public class GLEventListenerImpl implements GLEventListener{
+public class GLEventListenerImpl implements GLEventListener, InputWaiter{
     private FPSAnimator animator;
 
     private List<GLObject> modelList;
-    private List<CameraMovingAction> cameraMovingActionList;
-
-    private float[] lightPos = {40,40,40};
-
-    private float framecounter = 0;
+    private CameraMovingAction cameraMovingAction;
+    private CameraMovingAction cameraMovingActionSave;
 
     private Camera camera;
 
@@ -40,8 +37,8 @@ public class GLEventListenerImpl implements GLEventListener{
     @Override
     public void init(GLAutoDrawable drawable) {
         GL3 gl = drawable.getGL().getGL3();
-
-        initializeModels(gl);
+        InputListener inputListener =  new InputListener(canvas);
+        initializeModels(gl, inputListener);
 
         // generate Vertex Array Object
         vao = new int[1];
@@ -52,26 +49,26 @@ public class GLEventListenerImpl implements GLEventListener{
 
         animator = new FPSAnimator(drawable, 30);
         animator.start();
-        camera = new Camera(canvas);
-        addCameraMotionAction();
+
+        camera = new Camera(canvas,inputListener);
+        setupCameraMotionAction();
+        inputListener.addInputWaiter(EventType.Key_Typed, this);
     }
 
-    private void initializeModels (GL3 gl) {
-        modelList = ModelLoader.loadModelList(gl, canvas);
+    private void initializeModels (GL3 gl, InputListener inputListener) {
+        modelList = ModelLoader.loadModelList(gl, canvas, inputListener);
     }
 
-    public void addCameraMotionAction() {
-        cameraMovingActionList = new LinkedList<>();
-        CameraMovingAction cameraMovingAction = new CameraMovingAction(camera);
-        cameraMovingAction.addWayPoint(180, new Vector3f(0,6,-35), new Vector3f(0,0,1), 0);
-        /*
-        cameraMovingAction.addWayPoint(120, new Vector3f(15,4,-20), new Vector3f(0,0,1),0);
-        cameraMovingAction.addWayPoint(60, new Vector3f(15,-8,-20), new Vector3f(0,0,1),0);
-        cameraMovingAction.addWayPoint(90, new Vector3f(15,4,-20), new Vector3f(0,1,0),0.02f);
-        cameraMovingAction.addWayPoint(60, new Vector3f(-5,-2,-30), new Vector3f(0,1,0),-0.02f);
-        */
-        cameraMovingAction.setupMovingAction();
-        cameraMovingActionList.add(cameraMovingAction);
+    public void setupCameraMotionAction() {
+        cameraMovingAction = null;
+        cameraMovingActionSave = new CameraMovingAction(camera);
+        cameraMovingActionSave.addWayPoint(180, new Vector3f(0,6,-35), new Vector3f(0,0,1), 0);
+
+        cameraMovingActionSave.addWayPoint(120, new Vector3f(15,4,-20), new Vector3f(0,0,1),0);
+        cameraMovingActionSave.addWayPoint(60, new Vector3f(15,-8,-20), new Vector3f(0,0,1),0);
+        cameraMovingActionSave.addWayPoint(90, new Vector3f(15,4,-20), new Vector3f(0,1,0),0.02f);
+        cameraMovingActionSave.addWayPoint(60, new Vector3f(-5,-2,-30), new Vector3f(0,1,0),-0.02f);
+
     }
 
     @Override
@@ -89,12 +86,12 @@ public class GLEventListenerImpl implements GLEventListener{
 
     @Override
     public void display(GLAutoDrawable drawable) {
-        if (cameraMovingActionList.size() > 0) {
-            if (cameraMovingActionList.get(0).isMovingActionActive()) {
-                cameraMovingActionList.get(0).doStep();
+        if (cameraMovingAction != null) {
+            if (cameraMovingAction.isMovingActionActive()) {
+                cameraMovingAction.doStep();
             } else {
-                cameraMovingActionList.remove(0);
-            }
+                cameraMovingAction = null;
+        }
         }
 
         GL3 gl = drawable.getGL().getGL3();
@@ -106,32 +103,28 @@ public class GLEventListenerImpl implements GLEventListener{
         gl.glClear(GL3.GL_COLOR_BUFFER_BIT | GL3.GL_DEPTH_BUFFER_BIT);
 
 
-        //changeLightPosition();
         for(GLObject each: modelList){
+            if (!each.isActive()) {
+                continue;
+            }
             each.getShader().bind(gl);
             each.getShader().setGlobalUniform("cameraMatrix", camera.getCameraMatrix());
-        //    each.getShader().setGlobalUniform("light.position", lightPos);
 
             each.display(gl);
             each.getShader().unbind(gl);
         }
     }
 
-    private void changeLightPosition()  {
-        lightPos[0] *= 0.995f;
-        lightPos[1] *= 0.995f;
-        lightPos[2] *= 0.995f;
-
-        if(lightPos[0] < 8) {
-            lightPos[0] = 40;
+    @Override
+    public void inputEventHappened(InputEvent event) {
+        if (event instanceof KeyEvent) {
+            switch (((KeyEvent)event).getKeyChar()) {
+                case '2':
+                    camera.resetCamera();
+                    cameraMovingAction = cameraMovingActionSave;
+                    cameraMovingActionSave.setupMovingAction();
+                    break;
+            }
         }
-        if(lightPos[1] < 8) {
-            lightPos[1] = 40;
-        }
-        if(lightPos[1] < 8) {
-            lightPos[1] = 40;
-        }
-
     }
-
 }
