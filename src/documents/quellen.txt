@@ -4,10 +4,26 @@ http://www.tomdalling.com/blog/category/modern-opengl/
 https://en.wikibooks.org/wiki/OpenGL_Programming
 
 Obj Files:
+
 palmTree
 http://tf3dm.com/3d-model/my-palm-81844.html
 Grass
 http://tf3dm.com/3d-model/grass-low-poly-59616.html
+volleyball
+http://tf3dm.com/3d-model/volleyball-96571.html
+skydome
+http://www.blendswap.com/blends/view/3840
+
+Textures:
+
+net texture
+https://www.vectorstock.com/royalty-free-vector/seamless-volleyball-net-vector-537507
+metal texture
+http://cdn.mysitemyway.com/etc-mysitemyway/webtreats/assets/posts/873/thumbs/tileable-metal-textures-4.jpg
+sand texture
+http://www.tutorialsforblender3d.com/Textures/Sand/Sand_Normal_1.html
+
+
 
 
 
