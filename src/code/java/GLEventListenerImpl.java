@@ -91,7 +91,8 @@ public class GLEventListenerImpl implements GLEventListener, InputWaiter{
                 cameraMovingAction.doStep();
             } else {
                 cameraMovingAction = null;
-        }
+                camera.enableInputListeners();
+            }
         }
 
         GL3 gl = drawable.getGL().getGL3();
