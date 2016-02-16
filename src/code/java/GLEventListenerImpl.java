@@ -64,10 +64,10 @@ public class GLEventListenerImpl implements GLEventListener, InputWaiter{
         cameraMovingActionSave = new CameraMovingAction(camera);
         cameraMovingActionSave.addWayPoint(180, new Vector3f(0,6,-35), new Vector3f(0,0,1), 0);
 
-        cameraMovingActionSave.addWayPoint(120, new Vector3f(15,4,-20), new Vector3f(0,0,1),0);
-        cameraMovingActionSave.addWayPoint(60, new Vector3f(15,-8,-20), new Vector3f(0,0,1),0);
-        cameraMovingActionSave.addWayPoint(90, new Vector3f(15,4,-20), new Vector3f(0,1,0),0.02f);
-        cameraMovingActionSave.addWayPoint(60, new Vector3f(-5,-2,-30), new Vector3f(0,1,0),-0.02f);
+        cameraMovingActionSave.addWayPoint(120, new Vector3f(5,4,-20), new Vector3f(0,0,1),0);
+        cameraMovingActionSave.addWayPoint(60, new Vector3f(5,8,-30), new Vector3f(0,0,1),0);
+        cameraMovingActionSave.addWayPoint(90, new Vector3f(10,4,-20), new Vector3f(0,1,0),0.04f);
+        cameraMovingActionSave.addWayPoint(90, new Vector3f(-5,4,-30), new Vector3f(0,1,0),0.04f);
 
     }
 

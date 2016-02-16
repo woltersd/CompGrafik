@@ -57,7 +57,7 @@ public class Camera implements  InputWaiter{
         Vector3f changeVector = new Vector3f(axis);
         changeVector.normalize();
         changeVector.scale(distance);
-        cameraMatrix.translate(changeVector.x, changeVector.y, changeVector.z);
+        cameraMatrix.translate(-changeVector.x, -changeVector.y, changeVector.z);
         curPosition.add(changeVector);
     }
 
@@ -103,9 +103,9 @@ public class Camera implements  InputWaiter{
     }
 
     private void selfRotation(float angle,Vector3f axis) {
-        cameraMatrix.translate(-curPosition.x, -curPosition.y, -curPosition.z);
+        cameraMatrix.translate(curPosition.x, curPosition.y, -curPosition.z);
         cameraMatrix.rotate(angle, axis.x, axis.y, axis.z);
-        cameraMatrix.translate(curPosition.x, curPosition.y, curPosition.z);
+        cameraMatrix.translate(-curPosition.x, -curPosition.y, curPosition.z);
     }
 
     public void lookAt(Vector3f point, float rotation) {
