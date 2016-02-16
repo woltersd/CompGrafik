@@ -109,7 +109,9 @@ public class GLEventListenerImpl implements GLEventListener, InputWaiter{
                 continue;
             }
             each.getShader().bind(gl);
-            each.getShader().setGlobalUniform("cameraMatrix", camera.getCameraMatrix());
+            if (!(each instanceof GLHelpDialog)) {
+                each.getShader().setGlobalUniform("cameraMatrix", camera.getCameraMatrix());
+            }
 
             each.display(gl);
             each.getShader().unbind(gl);

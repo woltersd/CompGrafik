@@ -21,7 +21,6 @@ public class ModelLoader {
         float lightPos[] = new float[]{100f, 50f, -40f};
         float lightColor[] = new float[]{1f, 0.6f, 0.75f};
 
-
         Shader shader = new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "texture_FS.glsl");
         shader.setGlobalUniform("light.position", lightPos);
         shader.setGlobalUniform("light.intensities", lightColor);
@@ -47,6 +46,7 @@ public class ModelLoader {
         ball.setModelMatrixOffset(4f, 2f, 0f);
         modelList.add(ball);
         shadow = new GLShadow(gl, ball, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "outline.obj", new Shader(gl, "/src/code/glsl/","vertex_shader.glsl", "color_FS.glsl"));
@@ -67,6 +67,7 @@ public class ModelLoader {
         collision = new GLPlaneCollision(new Point3f[]{new Point3f(0,2.43f,0), new Point3f(0,1.43f,0)}, "y");
         ball.addCollision(collision);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         collision = new GLPlaneCollision(new Point3f[]{new Point3f(-8,40,0), new Point3f(-8,0,0)}, "y");
@@ -79,12 +80,14 @@ public class ModelLoader {
         model.setModelMatrixOffset(0f, 0f, 4f);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "cylinder.obj", shader);
         model.setModelMatrixOffset(0f, 0f, -4f);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
 
@@ -97,6 +100,7 @@ public class ModelLoader {
         modelList.add(model);
         ball.addCollision(sphereCollision);
         shadow = new GLShadow(gl, model, camShadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         sphereCollision = new GLSphereCollision(new Point3f(4f, 0.0f, 0.0f), 1);
@@ -111,6 +115,9 @@ public class ModelLoader {
 
         modelList.addAll(loadPalmTrees(gl, shader, shadowShader));
         modelList.addAll(loadGrass(gl, shader, shadowShader));
+
+        GLHelpDialog helpDialog = new GLHelpDialog(gl, inputListener);
+        modelList.add(helpDialog);
 
         return modelList;
 
@@ -161,6 +168,7 @@ public class ModelLoader {
             model.setModelMatrixOffset(values[index+1], values[index+2], values[index+3]);
             modelList.add(model);
             shadow = new GLShadow(gl, model, shadowShader);
+            model.setShadow(shadow);
             modelList.add(shadow);
         }
         return modelList;
@@ -213,6 +221,7 @@ public class ModelLoader {
         model.setModelMatrixOffset(-5f, 0f, -40f);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -220,6 +229,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(1, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -227,6 +237,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(2, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -234,6 +245,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(3, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -241,6 +253,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(3, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -248,6 +261,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(2, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
 
@@ -256,6 +270,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(1.5f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -263,6 +278,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(0.5f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -270,6 +286,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(1.0f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -277,6 +294,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(1.5f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -284,6 +302,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(2.8f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -291,6 +310,8 @@ public class ModelLoader {
         model.setModelMatrixRotation(3.5f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
+        modelList.add(shadow);
 
         modelList.add(shadow);
         model = new GLModel(gl, "palm02.obj", shader);
@@ -298,6 +319,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(1.8f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -305,6 +327,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(2.5f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -312,6 +335,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(0.8f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -319,6 +343,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(2.8f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -326,6 +351,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(3.5f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -333,6 +359,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(1.8f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -340,6 +367,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(2.5f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -347,6 +375,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(0.8f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -354,6 +383,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(3.5f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -361,6 +391,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(1.8f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -368,6 +399,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(2.5f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         model = new GLModel(gl, "palm02.obj", shader);
@@ -375,6 +407,7 @@ public class ModelLoader {
         model.setModelMatrixRotation(0.8f, 0, 1, 0);
         modelList.add(model);
         shadow = new GLShadow(gl, model, shadowShader);
+        model.setShadow(shadow);
         modelList.add(shadow);
 
         return modelList;

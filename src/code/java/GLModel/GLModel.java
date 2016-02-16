@@ -10,15 +10,11 @@ import javax.vecmath.Point2f;
 import javax.vecmath.Point3f;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 import java.util.ArrayList;
 import java.util.Map;
 
 
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
 import org.opencv.imgcodecs.Imgcodecs;
 
 /**
@@ -175,7 +171,7 @@ public class GLModel extends GLModelAbstract implements GLObject{
         gl.glDisableVertexAttribArray(2);
     }
 
-    private ByteBuffer loadTextureImage() {
+    protected ByteBuffer loadTextureImage() {
         image = Imgcodecs.imread(System.getProperty("user.dir").replaceAll("\\\\", "/") + "/src/res/" + objFile.getObjName(), Imgcodecs.IMREAD_UNCHANGED);
 
         if(image.rows() == 0){

@@ -35,6 +35,8 @@ public abstract class GLModelAbstract implements GLObject {
     protected ArrayList<Point2f> glTextureData;
     protected ArrayList<Integer> glIndexData;
 
+
+    private GLObject shadow;
     private Shader shader;
     private Map<String, Object> shaderUniforms;
 
@@ -63,6 +65,7 @@ public abstract class GLModelAbstract implements GLObject {
         ibo = new int[1]; //Index  Buffer Object
         tbo = new int[1]; //Texture Buffer Object
         activeModel = true;
+        shadow = null;
 
     }
 
@@ -203,19 +206,32 @@ public abstract class GLModelAbstract implements GLObject {
         this.tbo = tbo;
     }
 
+    public void setShadow(GLObject shadow) {
+        this.shadow = shadow;
+    }
+
     @Override
     public void activateModel() {
         activeModel = true;
+        if (shadow != null) {
+            shadow.activateModel();
+        }
     }
 
     @Override
     public void disableModel() {
         activeModel = false;
+        if (shadow != null) {
+            shadow.disableModel();
+        }
     }
 
     @Override
     public void toggleModel() {
         activeModel = !activeModel;
+        if (shadow != null) {
+            shadow.toggleModel();
+        }
     }
 
     @Override
@@ -223,3 +239,5 @@ public abstract class GLModelAbstract implements GLObject {
         return activeModel;
     }
 }
+
+

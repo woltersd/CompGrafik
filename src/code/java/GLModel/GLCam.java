@@ -20,7 +20,7 @@ import java.nio.IntBuffer;
  * @author Robert
  * @author peter
  */
-public class GLCam extends GLModel implements GLObject, InputWaiter{
+public class GLCam extends GLModel implements InputWaiter{
 
     private VideoCapture camera;
     private BackgroundSubtractor subtractor;

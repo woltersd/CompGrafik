@@ -110,7 +110,13 @@ public class CameraMovingAction {
         }
         camera.moveCamera(stepDistance, currentDestinationVector);
         if (rotationsStepAngle != 0) {
-            Vector3f newLookAt = camera.getRotatedAxis(rotationsStepAngle, currentRotationVector, camera.getCurrentLookVector());
+            Vector3f newLookAt;
+            if (currentRotationVector.length() == 0) {
+                newLookAt = camera.getCurrentLookVector();
+            } else {
+                newLookAt = camera.getRotatedAxis(rotationsStepAngle, currentRotationVector, camera.getCurrentLookVector());
+            }
+           //newLookAt.normalize();
             camera.lookAt(newLookAt, currentRotation);
             currentRotation += rotationsStepAngle;
           //  currentDestinationVector.sub(cameraPathPoints.get(currentWayPointIndex).wayPoint, camera.getCurPosition());
